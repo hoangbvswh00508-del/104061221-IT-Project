@@ -1,0 +1,144 @@
+* {
+  font-size: 16px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  /* margin: auto; */
+  margin-top: 8.5vh;
+  width: 500px;
+  /* background: #bebebe; */
+  padding-bottom: 30px;
+  margin-right: 0px;
+  margin-left: 0px;
+  position: relative;
+  left: 60%;
+  filter: blur(50%) saturate(200%) brightness(70%) hue-rotate(330deg);
+
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Semi-transparent white background */
+  backdrop-filter: blur(10px); /* Blurs the background behind the element */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border-radius: 10px; /* Rounded corners */
+  padding: 20px; /* Padding inside the container */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional shadow for depth */
+  border: white 2px solid;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: normal;
+  gap: 9px;
+  width: 100%;
+  margin-top: 30px;
+  padding-left: 3vw;
+}
+
+.text {
+  color: #fefefe;
+  font-size: 2em;
+  font-weight: 500;
+}
+.headerText {
+  color: #fff;
+}
+
+.underline {
+  width: 61px;
+  height: 6px;
+  color: #3c009d;
+  border-radius: 9px;
+}
+
+.inputs {
+  /* margin-top: 55px; */
+  display: flex;
+  display: block;
+  /*height: 34.5vh;
+   flex-direction: column;
+  gap: 25px; */
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  /* width: 450px; */
+  width: 90%;
+  height: 60px;
+  background: #08080800;
+  color: #fff;
+  border-radius: 6px;
+  border: #fff solid 2px;
+  border-radius: 15px;
+  margin-bottom: 4vh;
+}
+
+.input img {
+  margin: 0px 30px;
+  width: 5%;
+  height: 25%;
+  display: none;
+}
+
+.input input {
+  height: 50px;
+  width: 400px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 1.2em;
+  margin: 0 auto;
+}
+
+.forgot-password {
+  /* padding-left: 62px;
+  margin-top: 27px; */
+  color: #ffffff;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.forgot-password span {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.submit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 30px auto;
+  width: 98%;
+  align-items: center;
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 93%;
+  height: 59px;
+  color: #fff;
+  /* background: #4c00b4; */
+  border-radius: 15px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  background-image: linear-gradient(
+    to right,
+    rgb(13, 128, 235),
+    rgb(143, 1, 255)
+  );
+}
+
+.gray {
+  background: #eaeaea;
+  color: #676767;
+}
