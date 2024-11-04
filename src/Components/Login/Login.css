@@ -1,18 +1,61 @@
 * {
   font-size: 16px;
 }
+.main {
+  display: flex;
+  gap: 300px;
+}
+.company_name {
+  /* width: 30%; */
+  display: block;
+  margin: 50px 0px;
+}
+h1 {
+  color: #fff;
+  font-size: 5.73em;
+  left: 50px;
+  position: relative;
+  font-weight: 500;
+  width: 700px;
+  margin: 75px 0px 20px 0px;
+}
+.text_box {
+  border: #fff solid 2px;
+  width: 34%;
+  padding: 0px 20px;
+  left: 90px;
+  position: relative;
+  font-style: italic;
+}
+.text_login {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: #fff;
+}
+.login-image {
+  width: 650px;
+  height: 650px;
+  object-fit: cover;
+  position: absolute;
+  z-index: -1;
+  top: 30px;
+  right: 0;
+  margin-right: 280px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   /* margin: auto; */
   margin-top: 8.5vh;
-  width: 500px;
+  width: 400px;
   /* background: #bebebe; */
   padding-bottom: 30px;
   margin-right: 0px;
   margin-left: 0px;
   position: relative;
-  left: 60%;
+  float: right;
+  right: 60px;
   filter: blur(50%) saturate(200%) brightness(70%) hue-rotate(330deg);
 
   background-color: rgba(
