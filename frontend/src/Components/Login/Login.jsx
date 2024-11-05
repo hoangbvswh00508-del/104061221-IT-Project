@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import googleImage from './google-logo.png';
 import facebookImage from './facebook-logo.png';
@@ -13,6 +14,7 @@ const Login = () => {
     const [password, setPassword] = useState(''); // Store password
     const [action, setAction] = useState('Login');
     const [error, setError] = useState(null); // To handle errors
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
@@ -21,6 +23,7 @@ const Login = () => {
                 password,
             });
             console.log('Login successful:', response.data);
+            navigate('/dashboard');
             // Handle successful login (e.g., store token, redirect user)
         } catch (error) {
             // Log the error response message if available
@@ -59,15 +62,6 @@ const Login = () => {
                             onChange={(e) => setUsername(e.target.value)}
                         />
                     </div>
-                    {/* <div className="input">
-                        <img src={email_icon} alt="" />
-                        <input 
-                            type="email" 
-                            placeholder='Email' 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} // Handle email input
-                        />
-                    </div> */}
                     <div className="input">
                         <img src={password_icon} alt="" />
                         <input 

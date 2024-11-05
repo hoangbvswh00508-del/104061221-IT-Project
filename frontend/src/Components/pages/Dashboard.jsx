@@ -1,11 +1,12 @@
-import React from 'react'
+import React from 'react';
 
 const Dashboard = () => {
-  return (
-    <div>
-      Home
-    </div>
-  )
-}
+    return (
+        <div>
+            <h1>Welcome to the Dashboard!</h1>
+            <p>This is a test page to confirm the redirect after login.</p>
+        </div>
+    );
+};
 
-export default Dashboard
+export default Dashboard;

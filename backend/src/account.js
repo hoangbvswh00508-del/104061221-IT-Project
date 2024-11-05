@@ -24,7 +24,7 @@ function verifyToken(req, res, next) {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => { // Use the secret from the .env file
         if (err) {
-            return res.status(500).json({ message: 'Failed to authenticate token' });
+            return res.statusnpm (500).json({ message: 'Failed to authenticate token' });
         }
         req.userId = decoded.id; // Attach the user ID to the request for further use
         req.userRole = decoded.role; // Attach the user role to the request for further use
