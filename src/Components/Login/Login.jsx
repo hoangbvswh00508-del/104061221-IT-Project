@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import './Login.css'
 import loginImage from './Login_home.jpg';
+import googleImage from './google-logo.png';
+import facebookImage from './facebook-logo.png';
 
 import user_icon from '../Assets/user.png'
 import email_icon from '../Assets/email.png'
@@ -41,14 +43,43 @@ const Login = () => {
                         <input type="password" placeholder='Password'/>
                     </div>
                 </div>
+                <label class="remember-me">
+                <input type="checkbox" />
+                <span class="checkmark"></span>
+                Remember me
+                </label>
+
             
                 <div className="submit-container">
                     {/* <div className={action=="Login"?"submit gray":"submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</div> */}
                     <div className={action=="Sign Up"?"submit gray":"submit"} onClick={()=>{setAction("Login")}}>Login</div>
                 </div> 
-                {action=="Sign Up"?<div></div>: <div className="forgot-password"><span>Forgot Password?</span></div>}         
+                {action=="Sign Up"?<div></div>: <div className="forgot-password"><span>Forgot Password?</span></div>}       
+
+
+
+                <div class="login-footer">
+                <div class="separator">
+                    <hr />
+                    <span>Or</span>
+                    <hr />
+                </div>
+                <div class="social-login">
+                    <button class="google_login">
+                        <img alt="google_login" src={googleImage} className="login-media google" />
+                    </button>
+                    <button class="facebook_login">
+                        <img alt="facebook_login" src={facebookImage} className="login-media facebook" />
+                    </button>
+                </div>
+                <p>Don’t have an account? <a href="#">Signup</a></p>
+                <div class="footer-links">
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Support</a>
+                    <a href="#">Customer Care</a>
+                </div>
+                </div>
             </div>
-          
         </div>
     )
 }
