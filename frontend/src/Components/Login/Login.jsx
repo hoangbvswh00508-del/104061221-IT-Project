@@ -23,7 +23,8 @@ const Login = () => {
                 password,
             });
             console.log('Login successful:', response.data);
-            navigate('/dashboard');
+            localStorage.setItem('token', response.data.token);
+            navigate('/accountCreate');
             // Handle successful login (e.g., store token, redirect user)
         } catch (error) {
             // Log the error response message if available
