@@ -18,6 +18,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import Sidebar from './Sidebar';
 import Notification from '../pages/notification/Notification';
 import Sendmsg from '../pages/notification/Sendmsg';
+import { useNavigate } from 'react-router-dom';
 import './style.css'
 
 const Search = styled('div')(({ theme }) => ({
@@ -79,7 +80,7 @@ export default function PrimarySearchAppBar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
   const [isSendmsgOpen, setIsSendmsgOpen] = useState(false);
-
+  const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const isNotificationsOpen = Boolean(notificationsAnchorEl);
@@ -118,6 +119,11 @@ export default function PrimarySearchAppBar() {
     setIsSendmsgOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+};
+
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
@@ -137,6 +143,7 @@ export default function PrimarySearchAppBar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 

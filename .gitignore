@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+# Ignore Babel loader cache in node_modules
+frontend/node_modules/.cache/
 
 # testing
 /coverage

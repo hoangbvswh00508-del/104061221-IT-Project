@@ -16,22 +16,28 @@ const db = mysql.createConnection({
 
 
 router.post('/create-superadmin', async (req, res) => {
+    const { username, password, email } = req.body;
+    console.log("Received data:", { username, password, email }); // Move this line here for early logging
     console.log("Received request to create superadmin");
-    const { username, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        db.query('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hashedPassword, 'superAdmin'], (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Internal server error' });
+        db.query('INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)', 
+            [username, hashedPassword, 'superAdmin', email], 
+            (err, results) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+                res.status(201).json({ message: 'Superadmin account created successfully', userId: results.insertId });
             }
-            res.status(201).json({ message: 'Superadmin account created successfully', userId: results.insertId });
-        });
+        );
     } catch (error) {
+        console.error('Error in hashing password:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 module.exports = router;

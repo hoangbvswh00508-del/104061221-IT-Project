@@ -4,23 +4,25 @@ import axios from 'axios';
 const AccountCreation = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNum, setphoneNum] = useState('');
     const [message, setMessage] = useState('');
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
 
     const handleCreateAccount = async () => {
         try {
-            // Get token from local storage (assuming it's saved there after login)
             const token = localStorage.getItem('token');
 
             if (!token) {
                 setError("No token found. Please log in as an admin first.");
+                setMessage('');
                 return;
             }
+            console.log("Creating account with data:", { username, password, email });
 
-            // Send a request to the create-account endpoint
             const response = await axios.post(
                 'http://localhost:5000/create-account',
-                { username, password },
+                { username, password, email },
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -28,17 +30,21 @@ const AccountCreation = () => {
                 }
             );
 
-            // Display a success message or handle response
-            setMessage(response.data.message);
-            setError(null); // Clear any previous errors
+            if (response.status === 201) {
+                setUsername('');
+                setPassword('');
+                setEmail('');
+                setMessage(response.data.message);
+                setError('');
+            }
+
         } catch (err) {
-            // Display error message if request fails
             if (err.response) {
                 setError(err.response.data.message || 'Failed to create account');
             } else {
                 setError('Network error');
             }
-            setMessage(''); // Clear any previous success messages
+            setMessage('');
         }
     };
 
@@ -70,8 +76,17 @@ const AccountCreation = () => {
                         <input
                             type="email"
                             className='col-sm-4'
-                            value={password}
-                            // onChange={(e) => setPassword(e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className='form-group mb-2'>
+                        <label className='col-sm-3 col-form-label'>Phone Number:</label>
+                        <input
+                            type="phoneNum"
+                            className='col-sm-4'
+                            value={phoneNum}
+                            onChange={(e) => setphoneNum(e.target.value)}
                         />
                     </div>
                     <button onClick={handleCreateAccount}>Create Account</button>

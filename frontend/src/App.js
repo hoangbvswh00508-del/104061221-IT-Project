@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import logo from './logo.svg';
 import './App.css';
 import Login from './Components/Login/Login';
-import Dashboard from './Components/pages/Dashboard';
+import Dashboard from './Components/pages/dashboard.jsx';
 import AccountCreation from './Components/pages/AccountCreation.jsx';
 import Messages from './Components/pages/Messages';
 import Profile from './Components/pages/Profile';
@@ -18,7 +18,7 @@ function AppContent() {
     <>
       {location.pathname !== '/' && <Navbar />}
       <Routes>
-        <Route path="/" element={<Login  />} />
+        <Route path="/login" element={<Login  />} />
         <Route path="/accountCreate" element={<AccountCreation />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/messages" element={<Messages />} />

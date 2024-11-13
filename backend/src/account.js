@@ -49,16 +49,16 @@ router.post('/create-account', verifyToken, async (req, res) => {
         return res.status(403).json({ message: 'Access denied: You do not have permission to perform this action.' });
     }
 
-    const { username, password } = req.body;
+    const { username, password, email, phoneNum } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (err, results) => {
+        db.query('INSERT INTO users (username, password, email, phoneNum) VALUES (?, ?, ?, ?)', [username, hashedPassword, email, phoneNum], (err, results) => {
             if (err) {
                 console.error('Database query error:', err);
                 return res.status(500).json({ error: err.message });
             }
-            res.status(201).json({ message: 'Admin account created successfully', userId: results.insertId });
+            res.status(201).json({ message: 'Account created successfully', userId: results.insertId });
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
