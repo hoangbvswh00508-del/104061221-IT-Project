@@ -43,27 +43,42 @@ const AccountCreation = () => {
     };
 
     return (
-        <div>
-            <h2>Create a New Account</h2>
-            <div>
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+        <div className="container d-flex justify-content-center align-items-center">
+            <div className='card col-md-6'>
+                <div className='card-body ml-3'>
+                    <h2 className='card-title'>Create a New Account</h2>
+                    <div className='form-group mb-2'>
+                        <label className='col-sm-3 col-form-label'>Username:</label>
+                        <input
+                            type="text"
+                            className='col-sm-4'
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+                    <div className='form-group mb-2'>
+                        <label className='col-sm-3 col-form-label'>Password:</label>
+                        <input
+                            type="password"
+                            className='col-sm-4'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className='form-group mb-2'>
+                        <label className='col-sm-3 col-form-label'>Email:</label>
+                        <input
+                            type="email"
+                            className='col-sm-4'
+                            value={password}
+                            // onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <button onClick={handleCreateAccount}>Create Account</button>
+                    {message && <p style={{ color: 'green' }}>{message}</p>}
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                </div>
             </div>
-            <div>
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
-            <button onClick={handleCreateAccount}>Create Account</button>
-            {message && <p style={{ color: 'green' }}>{message}</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };

@@ -23,8 +23,7 @@ const Login = () => {
                 password,
             });
             console.log('Login successful:', response.data);
-            localStorage.setItem('token', response.data.token);
-            navigate('/accountCreate');
+            navigate('/dashboard');
             // Handle successful login (e.g., store token, redirect user)
         } catch (error) {
             // Log the error response message if available
@@ -37,70 +36,63 @@ const Login = () => {
         }
     };
 
-    
-
     return (
-        <div className="main">
-            <div className="company_name">
-                <h1>KSE OFFICE SALE</h1>
-                <div className="text_box">
-                    <p className='text_login'>Big office, big company</p>
+        <div className="container-fluid d-flex justify-content-center align-items-center vh-100 text-dark">
+            <div className="row w-100">
+                <div className="col-md-7 d-flex flex-column justify-content-center align-items-center">
+                    <h1 style={{ fontSize: '7em'}}>KSE OFFICE SALE</h1>
+                    <button className="btn btn-outline-light mt-3 text-dark" style={{ fontSize: '2em', padding: '10px 20px' }}>Big office, big company</button>
                 </div>
-            </div>          
-            <div className ='container'>
-                <div className ="header">
-                    <div className="text">{action}</div>
-                    <p className="headerText">Glad you're back!</p>
-                    <div className="underline"></div>
-                </div>
-                <div className="inputs">
-                    <div className="input">
-                        <img src={user_icon} alt="" />
-                        <input 
-                            type="text" 
-                            placeholder='Username' 
-                            value={username} 
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </div>
-                    <div className="input">
-                        <img src={password_icon} alt="" />
-                        <input 
-                            type="password" 
-                            placeholder='Password' 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                </div>
-                {error && <p className="error">{error}</p>}
-                <div className="submit-container">
-                    <div className="submit" onClick={handleLogin}>Login</div>
-                </div> 
-                <div className="forgot-password"><span>Forgot Password?</span></div>
-                <div className="login-footer">
-                    <div className="separator">
-                        <hr />
-                        <span>Or</span>
-                        <hr />
-                    </div>
-                    <div className="social-login">
-                        <button className="google_login">
-                            <img alt="google_login" src={googleImage} className="login-media google" />
-                        </button>
-                        <button className="facebook_login">
-                            <img alt="facebook_login" src={facebookImage} className="login-media facebook" />
-                        </button>
-                    </div>
-                    <div className="footer-links">
-                        <a href="#">Terms & Conditions</a>
-                        <a href="#">Support</a>
-                        <a href="#">Customer Care</a>
+                <div className="col-md-4 d-flex justify-content-center align-items-center">
+                    <div className="card p-4 bg-secondary text-white" id="login">
+                        <h3 className="card-title" style={{ fontSize: '3em'}}>Login</h3>
+                        <p>Glad you're back!</p>
+                        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+                            {error && <p className="error">{error}</p>}
+                            <div className="form-group">
+                                <label htmlFor="username">Username</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control mb-2 mt-2" 
+                                    id="username" 
+                                    placeholder="Username" 
+                                    value={username} 
+                                    onChange={(e) => setUsername(e.target.value)}                                  
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="password">Password</label>
+                                <input 
+                                    type="password"  
+                                    className="form-control mb-2 mt-2" 
+                                    id="password" 
+                                    placeholder="Password" 
+                                    value={password} 
+                                    onChange={(e) => setPassword(e.target.value)}                                     
+                                />
+                            </div>
+                            <button type="submit" className="btn w-100 btn-primary btn-block mt-3 justify-content-center align-items-center">Login</button>
+                        </form>
+                        <a href="#" className="text-white mt-3">Forgot Password?</a>
+                        {/* <div className="mt-3">
+                            <p>Or</p>
+                            <button className="btn btn-outline-light mr-2">
+                                <img alt="google_login" src={googleImage} className="login-media google" />
+                            </button>
+                            <button className="btn btn-outline-light">
+                                <img alt="facebook_login" src={facebookImage} className="login-media facebook" />
+                            </button>
+                        </div> */}
+                        <div className="mt-3">
+                            <a href="#" className="text-white"> Terms & Conditions</a> |
+                            <a href="#" className="text-white"> Support</a> |
+                            <a href="#" className="text-white"> Customer Care</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Login;
