@@ -1,39 +1,78 @@
-import React, { useState } from 'react';
-import './styles/role.css';
-import Pagination from './paginate/paginate';
+import React, { useState, useEffect } from "react";
+import "./styles/role.css";
+import Pagination from "./paginate/paginate";
 
 const Role = () => {
-  const [currentAdmins, setCurrentAdmins] = useState([
-    { name: 'John Doe', company: 'Company A', phone: '(123)-456-7890', email: 'john@example.com', country: 'USA', role: 'Admin' },
-    { name: 'Jane Smith', company: 'Company B', phone: '(987)-654-3210', email: 'jane@example.com', country: 'Canada', role: 'Production Administrator' },
-    { name: 'Ronald Richards', company: 'Adobe', phone: '(302) 555-0107', email: 'ronald@adobe.com', country: 'Israel', role: 'Admin' },
-    { name: 'Marvin McKinney', company: 'Tesla', phone: '(252) 555-0126', email: 'marvin@tesla.com', country: 'Iran', role: 'Production Administrator' },
-    { name: 'Jerome Bell', company: 'Google', phone: '(528) 555-0129', email: 'jerome@google.com', country: 'Réunion', role: 'Network Administrator' },
-    { name: 'Kathryn Murphy', company: 'Microsoft', phone: '(406) 555-0120', email: 'kathryn@microsoft.com', country: 'Curaçao', role: 'Network Administrator' },
-    { name: 'Jacob Jones', company: 'Yahoo', phone: '(208) 555-0112', email: 'jacob@yahoo.com', country: 'Brazil', role: 'Network Administrator' },
-    { name: 'Kristin Watson', company: 'Facebook', phone: '(704) 555-0127', email: 'kristin@facebook.com', country: 'Åland Islands', role: 'Finance Administrator' },
-    { name: 'Michael Brown', company: 'Apple', phone: '(123) 555-0123', email: 'michael@apple.com', country: 'USA', role: 'Finance Administrator' },
-  ]);
-
+  const [currentAdmins, setCurrentAdmins] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [updatedRoles, setUpdatedRoles] = useState({});
-  const [sortOption, setSortOption] = useState('role');
-  const [currentAdminsState, setAdminsState] = useState(currentAdmins);
-  const [isEditable, setIsEditable] = useState(false);
+  const [sortOption, setSortOption] = useState("role");
+  const [isEditable, setIsEditable] = useState(true);
   const itemsPerPage = 8;
+  const [alertMessage, setAlertMessage] = useState(null);
 
-  const handleSelect = (e, index) => {
-    const newRole = e.target.value;
-    setCurrentAdmins(prevAdmins => {
-      const updatedAdmins = [...prevAdmins];
-      updatedAdmins[index].role = newRole;
-      return updatedAdmins;
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/users", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        console.log("Fetching users from server...");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched users:", data); // Debug log the fetched user data
+        setCurrentAdmins(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleSelect = async (e, adminId, newRole) => {
+    setCurrentAdmins((prevAdmins) => {
+      return prevAdmins.map((admin) =>
+        admin.id === adminId ? { ...admin, role: newRole } : admin
+      );
     });
-    setUpdatedRoles(prevState => ({
-      ...prevState,
-      [index]: newRole
-    }));
+    try {
+      const response = await fetch("http://localhost:5000/update-role", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ id: adminId, role: newRole }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update role: ${data.message || "Unknown error"}`
+        );
+      }
+      setAlertMessage({ type: "success", text: "Role updated successfully." });
+    } catch (error) {
+      console.error("Error updating role:", error);
+      const errorMessage = error.message || "Error updating role";
+      setAlertMessage({ type: "error", text: errorMessage });
+      setCurrentAdmins((prevAdmins) => {
+        return prevAdmins.map((admin) =>
+          admin.id === adminId
+            ? { ...admin, role: prevAdmins.find((a) => a.id === adminId).role }
+            : admin
+        );
+      });
+    }
   };
 
   const handleSearch = (e) => {
@@ -44,60 +83,45 @@ const Role = () => {
     setSortOption(option);
   };
 
-  const handleSaveChanges = () => {
-    const updatedAdmins = currentAdminsState.map((admin, index) => {
-      if (updatedRoles[index]) {
-        return { ...admin, role: updatedRoles[index] };
-      }
-      return admin;
-    });
-    setCurrentAdmins(updatedAdmins);
-    setIsEditable(false);
-    // Update the state or make an API call to save the changes
-    console.log(updatedAdmins);
-  };
-
-  const handleEdit = () => {
-    setIsEditable(true);
-  };
-
-  const filteredAdmins = currentAdmins.filter((admin) =>
-    admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    admin.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    admin.phone.includes(searchQuery) ||
-    admin.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    admin.country.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAdmins = currentAdmins.filter(
+    (admin) =>
+      admin.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      admin.phone?.includes(searchQuery) ||
+      admin.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sortedAdmins = filteredAdmins.sort((a, b) => {
-    if (sortOption === 'name') {
-      return a.name.localeCompare(b.name);
-    } else if (sortOption === 'company') {
-      return a.company.localeCompare(b.company);
-    } else if (sortOption === 'role') {
-      return a.role.localeCompare(b.role);
+    if (sortOption === "name") {
+      const nameA = a.username || "";
+      const nameB = b.username || "";
+      return nameA.localeCompare(nameB);
+    } else if (sortOption === "role") {
+      const roleA = a.role || "";
+      const roleB = b.role || "";
+      return roleA.localeCompare(roleB);
     }
     return 0;
   });
 
-  // Calculate the current items to display
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = sortedAdmins.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Calculate the total number of pages
   const totalPages = Math.ceil(sortedAdmins.length / itemsPerPage);
 
-  // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   return (
     <div className="container" id="role">
+      {alertMessage && (
+        <div className={`alert alert-${alertMessage.type}`} role="alert">
+          {alertMessage.text}
+        </div>
+      )}
       <div className="row mb-3">
         <div className="col-md-6">
-          <h2>Admin Roles</h2>
+          <h2>Accounts</h2>
         </div>
         <div className="col-md-4">
           <input
@@ -117,12 +141,26 @@ const Role = () => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Sorting by: {sortOption.charAt(0).toUpperCase() + sortOption.slice(1)}
+              Sorting by:{" "}
+              {sortOption.charAt(0).toUpperCase() + sortOption.slice(1)}
             </button>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <li><button className="dropdown-item" onClick={() => handleSort('name')}>Name</button></li>
-              <li><button className="dropdown-item" onClick={() => handleSort('company')}>Company</button></li>
-              <li><button className="dropdown-item" onClick={() => handleSort('role')}>Role</button></li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => handleSort("name")}
+                >
+                  Name
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => handleSort("role")}
+                >
+                  Role
+                </button>
+              </li>
             </ul>
           </div>
         </div>
@@ -132,24 +170,19 @@ const Role = () => {
           <table className="table table-striped">
             <thead>
               <tr>
-                <th>Admin Name</th>
-                <th>Company</th>
+                <th>Username</th>
                 <th>Phone Number</th>
                 <th>Email</th>
-                <th>Country</th>
                 <th>Role</th>
               </tr>
             </thead>
             <tbody>
               {currentItems.map((admin, index) => {
-                const originalIndex = currentAdmins.findIndex(a => a.email === admin.email);
                 return (
                   <tr key={index}>
-                    <td>{admin.name}</td>
-                    <td>{admin.company}</td>
-                    <td>{admin.phone}</td>
-                    <td>{admin.email}</td>
-                    <td>{admin.country}</td>
+                    <td>{admin.username || "N/A"}</td>
+                    <td>{admin.phoneNum ? admin.phoneNum : "N/A"}</td>
+                    <td>{admin.email || "N/A"}</td>
                     <td>
                       <div className="dropdown">
                         <button
@@ -160,13 +193,62 @@ const Role = () => {
                           aria-expanded="false"
                           disabled={!isEditable}
                         >
-                          {admin.role}
+                          {admin.role || "N/A"}
                         </button>
-                        <ul className="dropdown-menu" aria-labelledby={`dropdownMenuButton-${index}`}>
-                          <li><button className="dropdown-item" onClick={() => handleSelect({ target: { value: 'Admin' } }, originalIndex)}>Admin</button></li>
-                          <li><button className="dropdown-item" onClick={() => handleSelect({ target: { value: 'Production Administrator' } }, originalIndex)}>Production Administrator</button></li>
-                          <li><button className="dropdown-item" onClick={() => handleSelect({ target: { value: 'Finance Administrator' } }, originalIndex)}>Finance Administrator</button></li>
-                          <li><button className="dropdown-item" onClick={() => handleSelect({ target: { value: 'Network Administrator' } }, originalIndex)}>Network Administrator</button></li>
+                        <ul
+                          className="dropdown-menu"
+                          aria-labelledby={`dropdownMenuButton-${index}`}
+                        >
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) =>
+                                handleSelect(e, admin.id, "Admin")
+                              }
+                            >
+                              Admin
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) =>
+                                handleSelect(e, admin.id, "Production Admin")
+                              }
+                            >
+                              Production Admin
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) =>
+                                handleSelect(e, admin.id, "Finance Admin")
+                              }
+                            >
+                              Finance Admin
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) =>
+                                handleSelect(e, admin.id, "Super Admin")
+                              }
+                            >
+                              Super Admin
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) =>
+                                handleSelect(e, admin.id, "Network Admin")
+                              }
+                            >
+                              Network Admin
+                            </button>
+                          </li>
                         </ul>
                       </div>
                     </td>
@@ -175,18 +257,13 @@ const Role = () => {
               })}
             </tbody>
           </table>
-          <div className="d-flex justify-content-end mt-3">
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-          </div>
-          <div className="d-flex justify-content-end mt-3">
-            {!isEditable ? (
-              <button className="btn btn-secondary" onClick={handleEdit}>Edit</button>
-            ) : (
-              <button className="btn btn-primary" onClick={handleSaveChanges}>Save Changes</button>
-            )}
-          </div>
         </div>
       </div>
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

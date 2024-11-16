@@ -34,6 +34,7 @@ const AccountCreation = () => {
                 setUsername('');
                 setPassword('');
                 setEmail('');
+                setphoneNum('');
                 setMessage(response.data.message);
                 setError('');
             }

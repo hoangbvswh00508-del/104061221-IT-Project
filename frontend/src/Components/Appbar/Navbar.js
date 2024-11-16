@@ -121,7 +121,7 @@ export default function PrimarySearchAppBar() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    navigate('/');
 };
 
   const menuId = 'primary-search-account-menu';

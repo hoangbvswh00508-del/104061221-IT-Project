@@ -45,7 +45,7 @@ function verifyToken(req, res, next) {
 
 
 router.post('/create-account', verifyToken, async (req, res) => {
-    if (req.userRole !== 'admin' && req.userRole !== 'superAdmin') {
+    if (req.userRole !== 'Admin' && req.userRole !== 'Super Admin') {
         return res.status(403).json({ message: 'Access denied: You do not have permission to perform this action.' });
     }
 
