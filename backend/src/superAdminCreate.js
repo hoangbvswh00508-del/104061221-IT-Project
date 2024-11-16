@@ -18,12 +18,12 @@ const db = mysql.createConnection({
 router.post('/create-superadmin', async (req, res) => {
     const { username, password, email } = req.body;
     console.log("Received data:", { username, password, email }); // Move this line here for early logging
-    console.log("Received request to create superadmin");
+    console.log("Received request to create Super Admin");
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         db.query('INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)', 
-            [username, hashedPassword, 'superAdmin', email], 
+            [username, hashedPassword, 'Super Admin', email], 
             (err, results) => {
                 if (err) {
                     console.error('Database error:', err);

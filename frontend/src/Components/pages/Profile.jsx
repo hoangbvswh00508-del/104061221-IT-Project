@@ -40,7 +40,7 @@ const Profile = () => {
             phoneNum: data.phoneNum,
             role: data.role,
             verify: data.verify,
-            avatar: data.avatar
+            avatar: data.avatar,
           });
           setUpdatedUserData({
             username: data.username,
@@ -48,7 +48,7 @@ const Profile = () => {
             phoneNum: data.phoneNum,
             role: data.role,
             password: data.password,
-            avatar: data.avatar
+            avatar: data.avatar,
           });
         }
       } catch (error) {
@@ -338,6 +338,37 @@ const Profile = () => {
             >
               Save
             </button>
+            {!isVerified && (
+              <div className="otp-container mt-3">
+                <div className="mb-3">
+                  <label htmlFor="otp" className="form-label">
+                    Enter OTP
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="otp"
+                    value={enteredOTP}
+                    onChange={(e) => setEnteredOTP(e.target.value)}
+                    maxLength={6} // OTP usually has 6 digits
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={verifyOtp}
+                  className="btn btn-success ms-3"
+                >
+                  Verify OTP
+                </button>
+                <button
+                  type="button"
+                  onClick={sendOtp}
+                  className="btn btn-primary ms-3"
+                >
+                  Send OTP
+                </button>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setIsChangingPassword(!isChangingPassword)}
