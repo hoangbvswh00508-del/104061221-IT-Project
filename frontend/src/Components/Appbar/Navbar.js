@@ -60,7 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
+const Navbar = () => {
   const [state, setState] = useState({
     top: false,
     left: false,
@@ -80,6 +80,13 @@ export default function PrimarySearchAppBar() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
   const [isSendmsgOpen, setIsSendmsgOpen] = useState(false);
+  const [newMessages, setNewMessages] = useState([]);
+  const [oldMessages, setOldMessages] = useState([
+    { sender: 'Viet Hoang', time: '7d', text: 'Hello!!!' },
+    { sender: 'Minh Duc', time: '9d', text: 'Can I ask u something' },
+    { sender: 'Hai Zuoc', time: '9d', text: 'U have picture of this apartment ?' },
+    { sender: 'Nhat Minh', time: '2w', text: 'Please send me some info' },
+  ]);
   const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -122,7 +129,13 @@ export default function PrimarySearchAppBar() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/');
-};
+  };
+
+  const addMessage = (text) => {
+    const newMessage = { sender: 'You', time: 'Just now', text };
+    setOldMessages([...newMessages, ...oldMessages]);
+    setNewMessages([newMessage]);
+  };
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -241,7 +254,7 @@ export default function PrimarySearchAppBar() {
               </IconButton>
               <div className={`dropdown-menu ${isNotificationsOpen ? 'show' : ''}`} aria-labelledby={notificationsDropdownId}>
                 <Box sx={{ p: 2, width: '400px' }}>
-                  <Notification /> {/* Render the Notification component */}
+                  <Notification newMessages={newMessages} oldMessages={oldMessages} /> {/* Render the Notification component */}
                 </Box>
               </div>
             </div>
@@ -277,9 +290,11 @@ export default function PrimarySearchAppBar() {
       {isSendmsgOpen && (
         <div className="sendmsg-container">
           <button className="close-button" onClick={handleCloseSendmsg}>x</button>
-          <Sendmsg />
+          <Sendmsg addMessage={addMessage} handleCloseSendmsg={handleCloseSendmsg} />
         </div>
       )}
     </Box>
   );
-}
+};
+
+export default Navbar;

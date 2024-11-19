@@ -27,7 +27,7 @@ export default function Sidebar({state, setState, toggleDrawer}) {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {['Dashboard', 'Order', 'Analytics', 'Messages', 'Profile', 'Role', 'accountCreate'].map((text, index) => (
+        {['Dashboard', 'Order', 'Analytics', 'Profile', 'Role', 'accountCreate'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton href={`/${text}`}>
               <ListItemIcon>

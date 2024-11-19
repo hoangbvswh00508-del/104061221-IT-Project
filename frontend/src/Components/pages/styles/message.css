@@ -1,7 +1,10 @@
 /* Styles for the History Order and Message sections */
-.container-fluid {
-    margin-top: 20px;
-}
+/* .center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+} */
   
 .card-header h5 {
     font-size: 18px;
