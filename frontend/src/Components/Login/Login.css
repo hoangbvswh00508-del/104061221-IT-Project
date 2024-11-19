@@ -7,6 +7,13 @@
 }
 
 form {
- width: 100%;
+  width: 100%;
 }
 
+.bg-secondary {
+  background-color: rgb(158 158 158 / 33%) !important;
+}
+.white-placeholder::placeholder {
+  color: #ffffff62 !important; /* Màu trắng cho placeholder */
+  opacity: 1; /* Đảm bảo không bị mờ */
+}
