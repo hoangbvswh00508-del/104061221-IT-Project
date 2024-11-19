@@ -317,6 +317,43 @@ app.post('/upload-avatar', authenticateJWT, upload.single('avatar'), async (req,
 });
 ;
 
+app.post('/create-superadmin', async (req, res) => {
+  const { username, password, email } = req.body;
+
+  if (!username || !password || !email) {
+      return res.status(400).json({ error: "Username, password, and email are required" });
+  }
+
+  try {
+
+      const [existingUser] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+      if (existingUser.length > 0) {
+          return res.status(400).json({ error: "Username already taken" });
+      }
+
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      db.query(
+          'INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)',
+          [username, hashedPassword, 'superAdmin', email],
+          (err, results) => {
+              if (err) {
+                  console.error('Database error:', err);
+                  return res.status(500).json({ error: 'Internal server error' });
+              }
+              res.status(201).json({
+                  message: 'Superadmin account created successfully',
+                  userId: results.insertId,
+              });
+          }
+      );
+  } catch (error) {
+      console.error('Error in hashing password:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 app.use(accountRoutes);
 
 app.listen(PORT, () => {
