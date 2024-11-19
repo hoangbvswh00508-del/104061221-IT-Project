@@ -48,20 +48,47 @@ const Login = () => {
   };
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center vh-100 text-dark">
+    <div 
+      className="container-fluid bg-black d-flex algin-item-center justify-content-center vh-100 text-dark mt-0 pt-5"
+      style={{
+        // alignItems: "flex-start",
+        paddingLeft:"4em"
+      }}
+    >
       <div className="row w-100">
-        <div className="col-md-7 d-flex flex-column justify-content-center align-items-center">
-          <h1 style={{ fontSize: "7em" }}>KSE OFFICE SALE</h1>
+        <div className="col-md-7 d-flex flex-column justify-content-center align-items-center mb-5">
+          <h1 style={{ fontSize: "7em", color: "white" }}>KSE OFFICE SALE</h1>
           <button
-            className="btn btn-outline-light mt-3 text-dark"
-            style={{ fontSize: "2em", padding: "10px 20px" }}
+            className="btn btn-outline-light mt-3"
+            style={{ 
+              fontSize: "1.5em", 
+              padding: "20px 30px", 
+              border:"#fff solid 2px",
+              fontStyle: "italic",
+              fontWeight:"700",
+              borderRadius:"0px"
+            }}
           >
             Big office, big company
           </button>
         </div>
         <div className="col-md-4 d-flex justify-content-center align-items-center">
-          <div className="card p-4 bg-secondary text-white" id="login">
-            <h3 className="card-title" style={{ fontSize: "3em" }}>
+          <div 
+            className="card p-4  text-white" id="login" 
+            style={{ 
+              backgroundColor: "rgb(158 158 158 / 33%)",
+              border:"white 2px solid",
+              borderRadius:"10px",
+              backdropFilter:"blur(10px)",
+              justifyItems:"left"
+            }}
+          >
+            <h3 
+              className="card-title" 
+              style={{ 
+                fontSize: "2em",
+                justifyContents: "left"
+              }}>
               Login
             </h3>
             <p>Glad you're back!</p>
@@ -73,30 +100,61 @@ const Login = () => {
             >
               {error && <p className="error">{error}</p>}
               <div className="form-group">
-                <label htmlFor="username">Username</label>
+                <label 
+                  htmlFor="username"
+                  style={{display:"none"}}    
+                >Username</label>
                 <input
                   type="text"
-                  className="form-control mb-2 mt-2"
+                  className="form-control mb-2 mt-2 white-placeholder"
                   id="username"
                   placeholder="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  style={{
+                    backgroundColor: "transparent",
+                    height: "50px",
+                    color: "#ffffff",
+                    fontSize:"1.2em",
+                    borderRadius: "10px",
+                    "::placeholder": {
+                      color: "white",
+                    }
+                  }}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="password">Password</label>
+                <label 
+                  htmlFor="password"
+                  style={{display:"none"}}  
+                >Password</label>
                 <input
                   type="password"
-                  className="form-control mb-2 mt-2"
+                  className="form-control mb-2 mt-2 white-placeholder"
                   id="password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  style={{
+                    backgroundColor: "transparent",
+                    height: "50px",
+                    color: "#ffffff",
+                    fontSize:"1.2em",
+                    borderRadius: "10px"
+                  }}
                 />
               </div>
               <button
                 type="submit"
                 className="btn w-100 btn-primary btn-block mt-3 justify-content-center align-items-center"
+                style={{
+                  backgroundImage: "linear-gradient(to right, rgb(13, 128, 235), rgb(142 75 193), rgb(93 18 151))",
+                  border: "none",
+                  height: "60px",
+                  borderRadius: "15px",
+                  fontSize:"19px",
+                  fontWeight:"500",
+                }}
               >
                 Login
               </button>

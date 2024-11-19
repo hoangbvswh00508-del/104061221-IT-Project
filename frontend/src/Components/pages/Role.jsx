@@ -113,7 +113,13 @@ const Role = () => {
   };
 
   return (
-    <div className="container" id="role">
+    <div 
+      className="container" 
+      id="role"
+      style={{
+        border: "black 2px solid"
+      }}
+    >
       {alertMessage && (
         <div className={`alert alert-${alertMessage.type}`} role="alert">
           {alertMessage.text}
@@ -130,6 +136,9 @@ const Role = () => {
             placeholder="Search"
             value={searchQuery}
             onChange={handleSearch}
+            style={{
+              backgroundColor: "#F9FBFF",
+            }}
           />
         </div>
         <div className="col-md-2 d-flex justify-content-end">
@@ -140,6 +149,12 @@ const Role = () => {
               id="dropdownMenuButton"
               data-bs-toggle="dropdown"
               aria-expanded="false"
+              style={{
+                backgroundColor: "#eaebef",
+                color: "black",
+                fontWeight:"500",
+                border: "none"
+              }}
             >
               Sorting by:{" "}
               {sortOption.charAt(0).toUpperCase() + sortOption.slice(1)}
@@ -192,6 +207,12 @@ const Role = () => {
                           data-bs-toggle="dropdown"
                           aria-expanded="false"
                           disabled={!isEditable}
+                          style={{
+                            backgroundColor: "rgb(0 255 222 / 53%)",
+                            color: "black",
+                            fontWeight: "500",
+                            border: "2px solid black"
+                          }}  
                         >
                           {admin.role || "N/A"}
                         </button>
