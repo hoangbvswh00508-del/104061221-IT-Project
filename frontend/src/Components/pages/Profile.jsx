@@ -241,7 +241,15 @@ const Profile = () => {
   console.log("isVerified in render:", isVerified); // Log isVerified value
   console.log("isEditing in render:", isEditing);
   return (
-    <div className="container">
+    <div 
+      className="container"
+      style={{
+        // border: "black 2px solid",
+        backgroundColor:"#fffefe",
+        boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
+        fontFamily: "'Poppins', sans-serif"
+      }}
+    >
       {message && (
         <div
           className={`alert alert-${isVerified ? "success" : "danger"}`}

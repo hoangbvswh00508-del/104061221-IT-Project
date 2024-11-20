@@ -51,7 +51,13 @@ const AccountCreation = () => {
 
     return (
         <div className="container d-flex justify-content-center align-items-center">
-            <div className='card col-md-6'>
+            <div 
+                className='card col-md-6'
+                style={{
+                    fontFamily: "'Poppins', sans-serif",
+                    boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)"
+                }}    
+            >
                 <div className='card-body ml-3'>
                     <h2 className='card-title'>Create a New Account</h2>
                     <div className='form-group mb-2'>

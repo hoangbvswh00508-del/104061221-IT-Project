@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.js';
+// import '@fontsource/poppins/500.css'; // Chỉ import weight 500
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

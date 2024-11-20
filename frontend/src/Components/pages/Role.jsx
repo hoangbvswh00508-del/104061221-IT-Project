@@ -117,7 +117,11 @@ const Role = () => {
       className="container" 
       id="role"
       style={{
-        border: "black 2px solid"
+        // border: "black 2px solid",
+        backgroundColor:"#fffefe",
+        boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
+        fontFamily: "'Poppins', sans-serif"
+
       }}
     >
       {alertMessage && (
@@ -153,7 +157,7 @@ const Role = () => {
                 backgroundColor: "#eaebef",
                 color: "black",
                 fontWeight:"500",
-                border: "none"
+                border: "none",
               }}
             >
               Sorting by:{" "}
