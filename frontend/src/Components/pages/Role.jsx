@@ -234,6 +234,7 @@ const Role = () => {
                             color: "black",
                             fontWeight: "500",
                             border: "2px solid black",
+                            backgroundColor: "#89c6b9"
                           }}
                         >
                           {admin.role || "N/A"}

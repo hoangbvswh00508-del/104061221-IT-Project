@@ -91,14 +91,20 @@ const AccountCreation = () => {
   return (
     <div className="container d-flex justify-content-center align-items-center">
       <div
-        className="card col-md-6"
+        className="card col-md-5"
         style={{
           fontFamily: "'Poppins', sans-serif",
           boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
         }}
       >
         <div className="card-body ml-3">
-          <h2 className="card-title">Create a New Account</h2>
+          <h2 
+            className="card-title"
+            style={{
+              textAlign: "center",
+              fontWeight: "700"
+            }}
+          >Create Account</h2>
           {message &&
             message.map((msgObj, index) => (
               <div
@@ -126,6 +132,17 @@ const AccountCreation = () => {
               className="col-sm-4"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "45px",
+                border: "none",
+                borderRadius: "10px",
+                backgroundColor: "#61585826",
+                width: "100%",
+                fontSize:"1.2em",
+                outline: "none",
+              }}
             />
           </div>
           <div className="form-group mb-2">
@@ -135,6 +152,17 @@ const AccountCreation = () => {
               className="col-sm-4"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "45px",
+                border: "none",
+                borderRadius: "10px",
+                backgroundColor: "#61585826",
+                width: "100%",
+                fontSize:"1.2em",
+                outline: "none",
+              }}
             />
           </div>
           <div className="form-group mb-2">
@@ -144,6 +172,17 @@ const AccountCreation = () => {
               className="col-sm-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "45px",
+                border: "none",
+                borderRadius: "10px",
+                backgroundColor: "#61585826",
+                width: "100%",
+                fontSize:"1.2em",
+                outline: "none",
+              }}
             />
           </div>
           <div className="form-group mb-2">
@@ -155,9 +194,39 @@ const AccountCreation = () => {
               pattern="[0-9]*"
               value={phoneNum}
               onChange={(e) => setPhoneNum(e.target.value)}
+              style={{
+               display: "flex",
+                flexDirection: "column",
+                height: "45px",
+                border: "none",
+                borderRadius: "10px",
+                backgroundColor: "#61585826",
+                width: "100%",
+                fontSize:"1.2em",
+                outline: "none",
+              }}
             />
           </div>
-          <button onClick={handleCreateAccount}>Create Account</button>
+          <div 
+            className="buttonContainer"
+            style={{
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <button 
+              onClick={handleCreateAccount}
+              style={{
+                backgroundColor: "rgb(73 145 255)",
+                color:"white",
+                margin: "10px auto",
+                border: "none",
+                borderRadius: "23px",
+                padding: "10px 20px",
+
+              }}
+            >Create Account</button>
+          </div>
         </div>
       </div>
     </div>
