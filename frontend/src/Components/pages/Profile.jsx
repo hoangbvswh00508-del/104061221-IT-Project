@@ -10,6 +10,7 @@ const Profile = () => {
     password: "",
     verify: false,
     avatar: "",
+    homeAddress: "",
   });
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
@@ -18,7 +19,6 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUserData, setUpdatedUserData] = useState(userData);
   const [newPassword, setNewPassword] = useState("");
-  const [activityLog, setActivityLog] = useState([]);
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -28,7 +28,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("auth_token");
         const response = await fetch("http://localhost:5000/get-user-data", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -41,6 +41,7 @@ const Profile = () => {
             role: data.role,
             verify: data.verify,
             avatar: data.avatar,
+            homeAddress: data.homeAddress,
           });
           setUpdatedUserData({
             username: data.username,
@@ -49,6 +50,7 @@ const Profile = () => {
             role: data.role,
             password: data.password,
             avatar: data.avatar,
+            homeAddress: data.homeAddress,
           });
         }
       } catch (error) {
@@ -60,24 +62,8 @@ const Profile = () => {
 
   useEffect(() => {
     console.log("userData.verify in useEffect:", userData.verify);
-    setIsVerified(userData.verify || false); // Ensure state is updated correctly
+    setIsVerified(userData.verify || false);
   }, [userData]);
-
-  useEffect(() => {
-    const fetchActivityLog = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/user-activity", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-        setActivityLog(data);
-      } catch (error) {
-        console.error("Error fetching activity log:", error);
-      }
-    };
-    fetchActivityLog();
-  }, []);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -85,68 +71,107 @@ const Profile = () => {
     setUpdatedUserData({ ...updatedUserData, [id]: value });
   };
 
+  const addMessage = (msg, type = "danger") => {
+    setMessage((prevMessages) => [...prevMessages, { msg, type }]);
+    setTimeout(() => {
+      setMessage((prevMessages) => prevMessages.filter((message) => message.msg !== msg));
+    }, 9000);
+  };
+  
+  
+   // Validation functions
+   const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validatePassword = (newPassword) => {
+    return newPassword.length >= 6;
+  };
+
   const saveProfileChanges = async () => {
-    console.log("Before saving, isVerified:", isVerified);
+    let isValid = true;
+  
+    if (!validateEmail(updatedUserData.email)) {
+      addMessage("Invalid email address.");
+      isValid = false;
+    }
+  
+    if (!validatePhone(updatedUserData.phoneNum)) {
+      addMessage("Invalid phone number. Must be 10 digits.");
+      isValid = false;
+    }
+  
+    if (!isValid) return;
+  
     try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch("http://localhost:5000/update-profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedUserData),
       });
+  
       const data = await response.json();
+  
       if (data.message) {
-        setMessage("Profile updated successfully");
-        setUserData((prevState) => ({
-          ...prevState,
-          ...updatedUserData,
-          verify: prevState.verify,
-        }));
-
+        addMessage("Profile updated successfully", "success");
+        setUserData((prevState) => ({ ...prevState, ...updatedUserData, verify: prevState.verify }));
         setIsEditing(false);
-        setTimeout(() => setMessage(""), 3000);
-        console.log("After saving, isVerified:", isVerified);
       } else {
-        setMessage("Error updating profile");
-        setTimeout(() => setMessage(""), 3000);
+        addMessage("Error updating profile");
       }
     } catch (error) {
-      setMessage("Error updating profile");
-      setTimeout(() => setMessage(""), 3000);
+      console.error("Error while updating profile:", error);
+      addMessage("Error updating profile");
     }
-    console.log("After saving, isVerified:", isVerified);
-    console.log("save button pressed");
   };
+  
 
+  
   const handleChangePassword = async () => {
     if (!currentPassword) {
       setMessage("Please enter your current password.");
       setTimeout(() => setMessage(""), 3000);
       return;
     }
-
+  
+    // Apply validation here
+    if (!validatePassword(currentPassword, newPassword)) {
+      setMessage("Invalid new password. Must be at least 6 characters.");
+      setTimeout(() => setMessage(""), 9000);
+      return;
+    }
+  
     try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch("http://localhost:5000/change-password", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
+  
       const data = await response.json();
       if (data.message) {
         setMessage("Password updated successfully");
-        setTimeout(() => setMessage(""), 3000);
         setCurrentPassword("");
         setNewPassword("");
         setIsChangingPassword(false);
       } else {
         setMessage("Error updating password");
-        setTimeout(() => setMessage(""), 3000);
       }
+      setTimeout(() => setMessage(""), 3000);
     } catch (error) {
       setMessage("Error updating password");
       setTimeout(() => setMessage(""), 3000);
@@ -157,7 +182,7 @@ const Profile = () => {
     const file = fileInputRef.current.files[0];
     if (!file) {
       setMessage("Please select a file first.");
-      setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+      setTimeout(() => setMessage(""), 3000);
       return;
     }
     const formData = new FormData();
@@ -167,7 +192,7 @@ const Profile = () => {
       const response = await fetch("http://localhost:5000/upload-avatar", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: formData,
       });
@@ -179,17 +204,16 @@ const Profile = () => {
           return { ...prevState, avatar: data.avatarUrl };
         });
         localStorage.setItem("avatar", data.avatarUrl);
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+        setTimeout(() => setMessage(""), 3000);
       } else {
         setMessage("Error updating profile picture");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+        setTimeout(() => setMessage(""), 3000);
       }
     } catch (error) {
       setMessage("Error updating profile picture");
-      setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+      setTimeout(() => setMessage(""), 3000);
     }
   };
-
   const sendOtp = async () => {
     try {
       const trimmedEmail = userData.email.trim();
@@ -199,19 +223,29 @@ const Profile = () => {
         body: JSON.stringify({ email: trimmedEmail }),
       });
       const data = await response.json();
-      if (data.message) {
-        setMessage("OTP sent to your email");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
-      } else {
-        setMessage("Error sending OTP");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
-      }
+      const newMessage = {
+        type: data.message === "OTP sent successfully" ? "success" : "danger",
+        msg: data.message || "Error sending OTP",
+      };
+  
+      setMessage(prevMessages => [...prevMessages, newMessage]);
+      setTimeout(() => {
+        setMessage([]);
+      }, 3000);
     } catch (error) {
-      setMessage("Error sending OTP");
-      setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+      const errorMessage = {
+        type: "danger",
+        msg: "Error sending OTP",
+      };
+      setMessage(prevMessages => [...prevMessages, errorMessage]);
+  
+      setTimeout(() => {
+        setMessage([]);
+      }, 3000);
     }
   };
-
+  
+  
   const verifyOtp = async () => {
     try {
       const trimmedEmail = userData.email.trim();
@@ -223,41 +257,38 @@ const Profile = () => {
       const data = await response.json();
       if (data.message) {
         setIsVerified(true);
-        setShowVerificationMessage(true); // Show the message
+        setShowVerificationMessage(true);
         setUserData((prevState) => {
           return { ...prevState, verify: true };
         });
         setMessage("Your email has been verified!");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+        setTimeout(() => setMessage(""), 3000);
       } else {
         setMessage("Invalid OTP");
-        setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+        setTimeout(() => setMessage(""), 3000);
       }
     } catch (error) {
       setMessage("Error verifying OTP");
-      setTimeout(() => setMessage(""), 3000); // Clear message after 3 seconds
+      setTimeout(() => setMessage(""), 3000);
     }
   };
-  console.log("isVerified in render:", isVerified); // Log isVerified value
+  console.log("isVerified in render:", isVerified);
   console.log("isEditing in render:", isEditing);
   return (
     <div 
       className="container"
       style={{
-        // border: "black 2px solid",
         backgroundColor:"#fffefe",
         boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
         fontFamily: "'Poppins', sans-serif"
       }}
     >
-      {message && (
-        <div
-          className={`alert alert-${isVerified ? "success" : "danger"}`}
-          role="alert"
-        >
-          {message}
-        </div>
-      )}
+      
+  {message && Array.isArray(message) && message.map((msgObj, index) => (
+    <div key={index} className={`alert alert-${msgObj.type}`} role="alert">
+      {msgObj.msg}
+    </div>
+  ))}
       <div className="row">
         <div className="col-md-5 align-items-center justify-content-center avatar-container">
           <div className="d-flex flex-column align-items-center justify-content-center">
@@ -288,7 +319,7 @@ const Profile = () => {
                 className="form-control"
                 id="username"
                 value={userData.username}
-                readOnly={true} // Ensure the field is always readOnly
+                readOnly={true}
               />
             </div>
             <div className="mb-3">
@@ -315,8 +346,21 @@ const Profile = () => {
                 value={isEditing ? updatedUserData.phoneNum : userData.phoneNum}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
-                maxLength={9}
+                maxLength={10}
                 pattern="[0-9]*"
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="homeAddress" className="form-label">
+                Home Address
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="homeAddress"
+                value={isEditing ? updatedUserData.homeAddress : userData.homeAddress}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
               />
             </div>
             <div className="mb-3">
@@ -358,7 +402,7 @@ const Profile = () => {
                     id="otp"
                     value={enteredOTP}
                     onChange={(e) => setEnteredOTP(e.target.value)}
-                    maxLength={6} // OTP usually has 6 digits
+                    maxLength={6}
                   />
                 </div>
                 <button

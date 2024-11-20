@@ -1,19 +1,54 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './styles/message.css';
 
 const Messages = () => {
-  const [newMessages, setNewMessages] = useState([]);
-  const [oldMessages, setOldMessages] = useState([]);
-  const [showNewMessages, setShowNewMessages] = useState(true);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const storedNewMessages = JSON.parse(localStorage.getItem('newMessages')) || [];
-    const storedOldMessages = JSON.parse(localStorage.getItem('oldMessages')) || [];
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        console.log('Fetching messages with token:', token);
 
-    setNewMessages(storedNewMessages);
-    setOldMessages(storedOldMessages);
+        if (!token) {
+          throw new Error("No auth token found");
+        }
+
+        const response = await axios.get('http://localhost:5000/messages', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const fetchedMessages = response.data;
+        console.log('Fetched Messages:', fetchedMessages);
+
+        setMessages(fetchedMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
   }, []);
 
+  const deleteMessage = async (id) => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        throw new Error("No auth token found");
+      }
+  
+      const response = await axios.delete(`http://localhost:5000/delete-messages/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      console.log(`Message with ID ${id} deleted successfully:`, response.data);
+      setMessages(messages.filter((message) => message.id !== id));
+    } catch (error) {
+      console.error('Error deleting message:', error);
+    }
+  };
+  
   return (
     <div className="center-container">
       <div className="container">
@@ -21,53 +56,41 @@ const Messages = () => {
           <div className="col-md-8">
             <div className="message-box">
               <div className="message-header">
-                <div className='fw-bold fs-2'>Notification</div>
-                <div className='d-flex flex-column mt-2 mb-2'>
-                  <div className=''>
-                    <button onClick={() => setShowNewMessages(true)} className={`btn ${showNewMessages ? 'btn-primary' : 'btn-secondary'} me-2`}>New</button>
-                    <button onClick={() => setShowNewMessages(false)} className={`btn ${!showNewMessages ? 'btn-primary' : 'btn-secondary'} ms-2`}>Old</button>
-                  </div>
-                </div>
+                <div className='fw-bold fs-2'>Messages</div>
               </div>
               <div className="message-body">
-                {showNewMessages ? (
+                {messages.length > 0 ? (
                   <>
-                    {newMessages.length > 0 ? (
-                      <>
-                        <div className='fw-bold mb-3'>New</div>
-                        {newMessages.map((message, index) => (
-                          <div key={index} className="message-item mb-3 new-message">
-                            <div className="d-flex justify-content-between">
-                              <div className='fw-bold'>{message.sender}</div>
-                              <div className="text-muted">{message.time}</div>
+                    {messages.map((message, index) => (
+                      <div key={index} className="message-item mb-3">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center">
+                            <img
+                              src={`http://localhost:5000${message.sender_avatar}`}
+                              alt="avatar"
+                              className="avatar-img"
+                            />
+                            <div>
+                              <div className='fw-bold'>{message.sender_username}</div>
+                              <div className="text-muted">{new Date(message.created_at).toLocaleString()}</div>
                             </div>
-                            <div>{message.text}</div>
                           </div>
-                        ))}
-                      </>
-                    ) : (
-                      <div>No new messages</div>
-                    )}
+                          <button
+                            className="delete-btn"
+                            onClick={() => deleteMessage(message.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <div className="mt-2">
+                          <div className="fw-bold">{message.subject}</div>
+                          <div>{message.body}</div>
+                        </div>
+                      </div>
+                    ))}
                   </>
                 ) : (
-                  <>
-                    {oldMessages.length > 0 ? (
-                      <>
-                        <div className='fw-bold mb-3'>Old</div>
-                        {oldMessages.map((message, index) => (
-                          <div key={index} className="message-item mb-3 old-message">
-                            <div className="d-flex justify-content-between">
-                              <div className='fw-bold'>{message.sender}</div>
-                              <div className="text-muted">{message.time}</div>
-                            </div>
-                            <div>{message.text}</div>
-                          </div>
-                        ))}
-                      </>
-                    ) : (
-                      <div>No old messages</div>
-                    )}
-                  </>
+                  <div>No messages</div>
                 )}
               </div>
             </div>

@@ -12,13 +12,21 @@ const Role = () => {
   const itemsPerPage = 8;
   const [alertMessage, setAlertMessage] = useState(null);
 
+  const rolePriority = {
+    "Super Admin": 1,
+    "Admin": 2,
+    "Production Admin": 3,
+    "Finance Admin": 4,
+    "Network Admin": 5,
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch("http://localhost:5000/users", {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
           },
         });
 
@@ -29,7 +37,7 @@ const Role = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched users:", data); // Debug log the fetched user data
+        console.log("Fetched users:", data);
         setCurrentAdmins(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -50,7 +58,7 @@ const Role = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify({ id: adminId, role: newRole }),
       });
@@ -81,6 +89,31 @@ const Role = () => {
 
   const handleSort = (option) => {
     setSortOption(option);
+
+    if (option === "role") {
+      const sortedAdmins = [...currentAdmins].sort((a, b) => {
+        const roleA = a.role || "";
+        const roleB = b.role || "";
+
+        const priorityA = rolePriority[roleA] || Number.MAX_SAFE_INTEGER;
+        const priorityB = rolePriority[roleB] || Number.MAX_SAFE_INTEGER;
+
+        return priorityA - priorityB;
+      });
+
+      setCurrentAdmins(sortedAdmins);
+    }
+
+    if (option === "name") {
+      const sortedAdmins = [...currentAdmins].sort((a, b) => {
+        const nameA = a.username?.toLowerCase() || "";
+        const nameB = b.username?.toLowerCase() || "";
+
+        return nameA.localeCompare(nameB);
+      });
+
+      setCurrentAdmins(sortedAdmins);
+    }
   };
 
   const filteredAdmins = currentAdmins.filter(
@@ -90,38 +123,23 @@ const Role = () => {
       admin.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const sortedAdmins = filteredAdmins.sort((a, b) => {
-    if (sortOption === "name") {
-      const nameA = a.username || "";
-      const nameB = b.username || "";
-      return nameA.localeCompare(nameB);
-    } else if (sortOption === "role") {
-      const roleA = a.role || "";
-      const roleB = b.role || "";
-      return roleA.localeCompare(roleB);
-    }
-    return 0;
-  });
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedAdmins.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sortedAdmins.length / itemsPerPage);
+  const currentItems = filteredAdmins.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   return (
-    <div 
-      className="container" 
+    <div
+      className="container"
       id="role"
       style={{
-        // border: "black 2px solid",
-        backgroundColor:"#fffefe",
+        backgroundColor: "#fffefe",
         boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
-        fontFamily: "'Poppins', sans-serif"
-
+        fontFamily: "'Poppins', sans-serif",
       }}
     >
       {alertMessage && (
@@ -156,7 +174,7 @@ const Role = () => {
               style={{
                 backgroundColor: "#eaebef",
                 color: "black",
-                fontWeight:"500",
+                fontWeight: "500",
                 border: "none",
               }}
             >
@@ -215,8 +233,8 @@ const Role = () => {
                             backgroundColor: "rgb(0 255 222 / 53%)",
                             color: "black",
                             fontWeight: "500",
-                            border: "2px solid black"
-                          }}  
+                            border: "2px solid black",
+                          }}
                         >
                           {admin.role || "N/A"}
                         </button>
@@ -227,9 +245,7 @@ const Role = () => {
                           <li>
                             <button
                               className="dropdown-item"
-                              onClick={(e) =>
-                                handleSelect(e, admin.id, "Admin")
-                              }
+                              onClick={(e) => handleSelect(e, admin.id, "Admin")}
                             >
                               Admin
                             </button>

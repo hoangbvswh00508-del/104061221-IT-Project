@@ -36,12 +36,53 @@ const authenticateJWT = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ error: "Invalid or expired token." });
+      return res.status(401).json({ error: "Token expired or invalid. Please log in again." });
     }
     req.user = user;
     next();
   });
 };
+
+const deleteMessageById = async (messageId) => {
+  try {
+    const deleteMessageQuery = 'DELETE FROM messages WHERE id = ?';
+    const [messageResult] = await db.query(deleteMessageQuery, [messageId]);
+
+    if (messageResult.affectedRows === 0) {
+      throw new Error("Message not found");
+    }
+    const deleteNotificationQuery = 'DELETE FROM notifications WHERE id = ?';
+    const [notificationResult] = await db.query(deleteNotificationQuery, [messageId]);
+
+    if (notificationResult.affectedRows === 0) {
+      console.log("No related notification found for this message");
+    }
+
+    return { messageDeleted: true, notificationDeleted: notificationResult.affectedRows > 0 };
+  } catch (error) {
+    console.error("Error deleting message or notification:", error);
+    throw new Error("Failed to delete message or notification");
+  }
+};
+
+const verifyToken = (req, res, next) => {
+  const token = req.header("Authorization")?.split(" ")[1];
+  
+  if (!token) {
+    return res.status(403).json({ message: "Access Denied" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(401).json({
+        message: "Token expired or invalid",
+      });
+    }
+    req.user = user;
+    next();
+  });
+};
+
 
 const checkRoleUpdatePermissions = (req, res, next) => {
   const { role } = req.user;
@@ -118,7 +159,7 @@ app.post("/send-otp", async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
     console.log("Generated OTP:", otp);
 
-    const expirationTime = new Date(Date.now() + 10 * 60 * 1000); // expire time 10 mins
+    const expirationTime = new Date(Date.now() + 10 * 60 * 1000);
     console.log("OTP Expiration Time:", expirationTime);
 
     await db.query(
@@ -185,7 +226,7 @@ app.get("/get-user-data", authenticateJWT, async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      "SELECT username, email, phoneNum, role, verify, avatar FROM users WHERE id = ?",
+      "SELECT username, email, phoneNum, role, homeAddress, verify, avatar FROM users WHERE id = ?",
       [userId]
     );
     res.json(rows[0]);
@@ -227,6 +268,11 @@ app.put(
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
+    if (currentUserRole === "Admin" && (role === "Admin" || role === "Super Admin")) {
+      return res.status(403).json({
+        message: "Admin cannot assign Admin or Super Admin roles",
+      });
+    }
 
     try {
       const [rows] = await db.query("SELECT role FROM users WHERE id = ?", [
@@ -254,20 +300,48 @@ app.put(
     }
   }
 );
-//Update profile information
 app.put("/update-profile", authenticateJWT, async (req, res) => {
-  const { username, email, phoneNum } = req.body;
+  const { username, email, phoneNum, homeAddress } = req.body;
   const userId = req.user.id;
+
+  if (!username || !email || !phoneNum) {
+    return res.status(400).json({ message: "Username, email, and phone number are required" });
+  }
+
+  const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+  const phoneRegex = /^[0-9]{10}$/;
+
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  if (!phoneRegex.test(phoneNum)) {
+    return res.status(400).json({ message: "Invalid phone number format" });
+  }
+
   try {
+    const [rows] = await db.query("SELECT email FROM users WHERE id = ?", [userId]);
+    const currentEmail = rows[0]?.email;
+
+    if (currentEmail !== email) {
+      await db.query("UPDATE users SET verify = ? WHERE id = ?", [false, userId]);
+    }
+
     const query =
-      "UPDATE users SET username = ?, email = ?, phoneNum = ? WHERE id = ?";
-    await db.query(query, [username, email, phoneNum, userId]);
-    res.status(200).json({ message: "Profile updated successfully" });
+      "UPDATE users SET username = ?, email = ?, phoneNum = ?, homeAddress = ? WHERE id = ?";
+    const updateResult = await db.query(query, [username, email, phoneNum, homeAddress, userId]);
+
+    console.log("Update result:", updateResult);
+
+    return res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
     console.error("Error updating profile:", error);
-    res.status(500).json({ message: "Error updating profile" });
+    return res.status(500).json({ message: "Error updating profile" });
   }
 });
+
+
+
 app.put("/change-password", authenticateJWT, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const userId = req.user.id;
@@ -350,6 +424,160 @@ app.post('/create-superadmin', async (req, res) => {
   } catch (error) {
       console.error('Error in hashing password:', error);
       res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get("/notifications", authenticateJWT, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const query = `
+      SELECT n.id, n.sender, n.subject, n.body, n.is_read, n.created_at, u.username AS sender_username, u.avatar AS sender_avatar
+      FROM notifications n
+      JOIN users u ON n.sender = u.username
+      WHERE n.user_id = ?
+    `;
+    const [rows] = await db.query(query, [userId]);
+
+    console.log("Fetched Notifications with is_read status:", rows);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Error fetching notifications" });
+  }
+});
+
+
+
+
+app.get("/messages", authenticateJWT, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const query = `
+      SELECT m.id, m.sender_id, m.receiver_id, m.subject, m.body, m.created_at, u.username AS sender_username, u.avatar AS sender_avatar
+      FROM messages m
+      JOIN users u ON m.sender_id = u.id
+      WHERE m.receiver_id = ?
+    `;
+    const [rows] = await db.query(query, [userId]);
+
+    console.log("Fetched Messages with Usernames and Avatars:", rows);
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ message: "Error fetching messages" });
+  }
+});
+
+app.post('/send-message', authenticateJWT, async (req, res) => {
+  const { receiver_id, subject, body } = req.body;
+  const sender_id = req.user.id;
+
+  if (!receiver_id || !subject || !body) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const insertMessageQuery = `
+      INSERT INTO messages (sender_id, receiver_id, subject, body, created_at)
+      VALUES (?, ?, ?, ?, NOW())`;
+
+    const [messageResult] = await db.query(insertMessageQuery, [sender_id, receiver_id, subject, body]);
+
+    const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [sender_id]);
+    if (userRows.length === 0) {
+      return res.status(400).json({ message: "Sender user does not exist" });
+    }
+
+    const senderUsername = userRows[0].username;
+
+    const insertNotificationQuery = `
+      INSERT INTO notifications (user_id, sender, subject, body, is_read, created_at)
+      VALUES (?, ?, ?, ?, false, NOW())`;
+
+    const [notificationResult] = await db.query(insertNotificationQuery, [receiver_id, senderUsername, subject, body]);
+
+    console.log('Notification created:', notificationResult);
+
+    res.status(200).send({ message: 'Message sent and notification created successfully' });
+  } catch (err) {
+    console.error('Error inserting message or notification:', err);
+    res.status(500).send('Error sending message and creating notification');
+  }
+});
+
+app.get("/get-user-id-by-email", authenticateJWT, async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  try {
+    const [rows] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+    
+    if (rows.length > 0) {
+      return res.status(200).json({ id: rows[0].id });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    return res.status(500).json({ message: "Error fetching user" });
+  }
+});
+
+app.get("/notifications/unread-count", authenticateJWT, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const query = `
+      SELECT COUNT(*) AS unread_count
+      FROM notifications
+      WHERE user_id = ? AND is_read = false
+    `;
+    const [rows] = await db.query(query, [userId]);
+
+    res.status(200).json({ unread_count: rows[0].unread_count });
+  } catch (error) {
+    console.error("Error fetching unread notifications count:", error);
+    res.status(500).json({ message: "Error fetching unread notifications count" });
+  }
+});
+
+app.put('/notifications/:id/seen', authenticateJWT, async (req, res) => {
+  try {
+    const notificationId = req.params.id;
+
+    const [result] = await db.query(
+      'UPDATE notifications SET is_read = 1 WHERE id = ?',
+      [notificationId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+
+    return res.json({ message: 'Notification marked as seen' });
+  } catch (error) {
+    console.error('Error updating notification:', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/delete-messages/:id', authenticateJWT, async (req, res) => {
+  const messageId = req.params.id;
+
+  try {
+    const result = await deleteMessageById(messageId);
+
+    if (result.messageDeleted) {
+      res.status(200).json({ message: 'Message and related notification deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Message not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete message and notification' });
   }
 });
 

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import logo from './logo.svg';
 import './App.css';
 import Login from './Components/Login/Login';
-import Dashboard from './Components/pages/dashboard.jsx';
+import Dashboard from './Components/pages/Dashboard.jsx';
 import AccountCreation from './Components/pages/AccountCreation.jsx';
 import Messages from './Components/pages/Messages';
 import Profile from './Components/pages/Profile';
