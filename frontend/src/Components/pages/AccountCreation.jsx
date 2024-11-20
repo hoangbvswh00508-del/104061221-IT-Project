@@ -94,7 +94,7 @@ const AccountCreation = () => {
         className="card col-md-5"
         style={{
           fontFamily: "'Poppins', sans-serif",
-          boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
+          boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.29)",
         }}
       >
         <div className="card-body ml-3">

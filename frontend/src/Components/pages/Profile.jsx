@@ -279,7 +279,7 @@ const Profile = () => {
       className="container"
       style={{
         backgroundColor:"#fffefe",
-        boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.5)",
+        boxShadow: "0px 10px 60px 0px rgba(226, 236, 249, 0.29)",
         fontFamily: "'Poppins', sans-serif"
       }}
     >
