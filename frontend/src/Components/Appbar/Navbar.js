@@ -175,8 +175,14 @@ const Navbar = () => {
       anchorOrigin={{ vertical: "top", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleProfileMenuClose}>My Account</MenuItem>
+       <MenuItem
+      onClick={() => {
+        handleProfileMenuClose(); // Close the menu
+        navigate("/profile");    // Navigate to Profile
+      }}
+    >
+      Profile
+    </MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );

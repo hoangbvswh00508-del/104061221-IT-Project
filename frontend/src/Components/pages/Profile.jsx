@@ -227,24 +227,18 @@ const Profile = () => {
         type: data.message === "OTP sent successfully" ? "success" : "danger",
         msg: data.message || "Error sending OTP",
       };
-  
-      setMessage(prevMessages => [...prevMessages, newMessage]);
-      setTimeout(() => {
-        setMessage([]);
-      }, 3000);
+
+      setMessage([newMessage]);
+      setTimeout(() => setMessage([]), 9000);
     } catch (error) {
       const errorMessage = {
         type: "danger",
         msg: "Error sending OTP",
       };
-      setMessage(prevMessages => [...prevMessages, errorMessage]);
-  
-      setTimeout(() => {
-        setMessage([]);
-      }, 3000);
+      setMessage([errorMessage]);
+      setTimeout(() => setMessage([]), 9000);
     }
   };
-  
   
   const verifyOtp = async () => {
     try {
@@ -258,22 +252,25 @@ const Profile = () => {
       if (data.message) {
         setIsVerified(true);
         setShowVerificationMessage(true);
-        setUserData((prevState) => {
-          return { ...prevState, verify: true };
-        });
-        setMessage("Your email has been verified!");
-        setTimeout(() => setMessage(""), 3000);
+        setUserData((prevState) => ({
+          ...prevState,
+          verify: true,
+        }));
+        const successMessage = { type: "success", msg: "Your email has been verified!" };
+        setMessage([successMessage]);
+        setTimeout(() => setMessage([]), 9000);
       } else {
-        setMessage("Invalid OTP");
-        setTimeout(() => setMessage(""), 3000);
+        const invalidOtpMessage = { type: "danger", msg: "Invalid OTP" };
+        setMessage([invalidOtpMessage]);
+        setTimeout(() => setMessage([]), 9000);
       }
     } catch (error) {
-      setMessage("Error verifying OTP");
-      setTimeout(() => setMessage(""), 3000);
+      const errorMessage = { type: "danger", msg: "Error verifying OTP" };
+      setMessage([errorMessage]);
+      setTimeout(() => setMessage([]), 9000);
     }
   };
-  console.log("isVerified in render:", isVerified);
-  console.log("isEditing in render:", isEditing);
+
   return (
     <div 
       className="container"
