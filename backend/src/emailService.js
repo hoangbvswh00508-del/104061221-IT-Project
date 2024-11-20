@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Set up email transporter using Gmail's SMTP server
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -10,7 +9,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Send OTP email
 const sendOtpEmail = (email, otp) => {
   console.log(`Preparing to send OTP (${otp}) to email: ${email}`);
 

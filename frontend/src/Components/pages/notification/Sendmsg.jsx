@@ -6,12 +6,12 @@ const Sendmsg = ({ addMessage }) => {
   const [subject, setSubject] = useState('');
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // Added successMessage state
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccessMessage(''); // Clear success message before attempting to send
+    setSuccessMessage('');
 
     try {
       const token = localStorage.getItem("auth_token");
@@ -19,19 +19,15 @@ const Sendmsg = ({ addMessage }) => {
         setError('No token found');
         return;
       }
-
-      // Step 1: Get the logged-in user's email using your /get-user-data endpoint
       const userEmail = await getLoggedInUserEmail(token);
-
-      // Step 2: Compare the logged-in user's email with the recipient's email
       if (userEmail === to) {
         setError("You cannot send a message to yourself.");
         return;
       }
 
-      console.log('Getting user ID by email:', to); // Debug log
+      console.log('Getting user ID by email:', to);
       const receiverId = await getUserIdByEmail(to);
-      console.log('Receiver ID:', receiverId); // Debug log
+      console.log('Receiver ID:', receiverId);
 
       if (!receiverId) {
         setError('Invalid email address or user not found');
@@ -52,7 +48,7 @@ const Sendmsg = ({ addMessage }) => {
       setSubject('');
       setTo('');
       setError(''); 
-      setSuccessMessage("Message sent successfully!"); // Display success message
+      setSuccessMessage("Message sent successfully!");
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -60,7 +56,6 @@ const Sendmsg = ({ addMessage }) => {
     }
   };
 
-  // Function to get the logged-in user's email using /get-user-data
   const getLoggedInUserEmail = async (token) => {
     try {
       const response = await axios.get('http://localhost:5000/get-user-data', {
@@ -76,7 +71,7 @@ const Sendmsg = ({ addMessage }) => {
 
   const getUserIdByEmail = async (email) => {
     try {
-      const token = localStorage.getItem("auth_token"); // Ensure using correct token key
+      const token = localStorage.getItem("auth_token");
       if (!token) {
         setError('No token found');
         return null;
@@ -88,7 +83,7 @@ const Sendmsg = ({ addMessage }) => {
         },
         params: { email },
       });
-      console.log('getUserIdByEmail response:', response.data); // Debug log
+      console.log('getUserIdByEmail response:', response.data);
       return response.data.id;
     } catch (error) {
       console.error("Error fetching user by email", error);
@@ -103,7 +98,7 @@ const Sendmsg = ({ addMessage }) => {
         <div className="col-md-12 w-100">
           <h4 className="mb-4">Compose Message</h4>
           {error && <div className="alert alert-danger">{error}</div>}
-          {successMessage && <div className="alert alert-success">{successMessage}</div>} {/* Display success message */}
+          {successMessage && <div className="alert alert-success">{successMessage}</div>}
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '1rem' }}>
               <label htmlFor="to">To</label>

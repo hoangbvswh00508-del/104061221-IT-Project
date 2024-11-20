@@ -1,19 +1,18 @@
-/* "See All" Button Styling */
 .navigate-text {
   font-size: 14px;
-  color: #007bff; /* Blue color */
+  color: #007bff;
   cursor: pointer;
   text-decoration: none;
   font-weight: bold;
   padding: 8px 15px;
   border-radius: 20px;
   transition: all 0.3s ease;
-  border: 1px solid #007bff; /* Border with same color */
+  border: 1px solid #007bff;
 }
 
 .navigate-text:hover {
-  background-color: #007bff; /* Blue background on hover */
-  color: white; /* White text when hovered */
+  background-color: #007bff;
+  color: white;
   text-decoration: none;
 }
 
@@ -21,12 +20,11 @@
   outline: none;
 }
 
-/* Improve "Mark as Seen" button */
 .mark-as-seen-btn {
   padding: 8px 16px;
   font-size: 14px;
   color: white;
-  background-color: #0018F9; /* Keeping original color */
+  background-color: #0018F9;
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -40,10 +38,10 @@
 }
 
 .mark-as-seen-btn:hover:not(:disabled) {
-  background-color: #0033cc; /* Darker blue on hover */
+  background-color: #0033cc;
 }
 
-/* Notification Container */
+
 .notification-container {
   padding: 20px;
   background-color: #f9f9f9;
@@ -51,7 +49,6 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Notification Item Styling */
 .noti-item {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
@@ -64,7 +61,7 @@
 }
 
 .noti-item:hover {
-  background-color: #f0f8ff; /* Light blue background on hover */
+  background-color: #f0f8ff;
 }
 
 .noti-item .avatar-img {

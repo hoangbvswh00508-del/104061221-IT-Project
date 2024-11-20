@@ -6,19 +6,17 @@ import axios from "axios";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null); // Error state to display error message
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form submission to avoid page reload
+    e.preventDefault();
 
     try {
       const response = await axios.post("http://localhost:5000/login", {
         username,
         password,
       });
-
-      // On success, save token and fetch user data
       localStorage.setItem("auth_token", response.data.token);
       localStorage.removeItem("avatar");
       await fetchUserData();
@@ -64,8 +62,6 @@ const Login = () => {
             style={{ backgroundColor: "rgb(158 158 158 / 33%)", border: "white 2px solid", borderRadius: "10px", backdropFilter: "blur(10px)", justifyItems: "left" }}>
             <h3 className="card-title" style={{ fontSize: "2em", justifyContents: "left" }}>Login</h3>
             <p>Glad you're back!</p>
-            
-            {/* Display error message */}
             {error && <p className="error" style={{ color: "red", fontSize: "1.2em" }}>{error}</p>}
 
             <form onSubmit={handleLogin}>
