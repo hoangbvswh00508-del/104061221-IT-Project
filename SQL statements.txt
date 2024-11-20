@@ -1,0 +1,38 @@
+CREATE TABLE users (
+  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL,
+  password VARCHAR(255) COLLATE utf8mb4_general_ci NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  email VARCHAR(255) COLLATE utf8mb4_general_ci NOT NULL,
+  otp INT(6) DEFAULT NULL,
+  otp_expiration DATETIME DEFAULT NULL,
+  phoneNum VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  verify TINYINT(1) DEFAULT 0,
+  role VARCHAR(255) COLLATE utf8mb4_general_ci NOT NULL,
+  avatar VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  homeAddress VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL
+);
+
+CREATE TABLE notifications (
+  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT(11) NOT NULL,
+  sender VARCHAR(255) COLLATE utf8mb4_general_ci NOT NULL,
+  message TEXT COLLATE utf8mb4_general_ci NOT NULL,
+  is_read TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  subject VARCHAR(255) COLLATE utf8mb4_general_ci NOT NULL,
+  body TEXT COLLATE utf8mb4_general_ci NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE messages (
+  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sender_id INT(11) NOT NULL,
+  receiver_id INT(11) NOT NULL,
+  subject VARCHAR(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  body TEXT COLLATE utf8mb4_general_ci NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sender_id) REFERENCES users(id),
+  FOREIGN KEY (receiver_id) REFERENCES users(id)
+);
+
