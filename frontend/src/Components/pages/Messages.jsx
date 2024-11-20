@@ -55,10 +55,19 @@ const Messages = () => {
         <div className="row justify-content-center">
           <div className="col-md-8">
             <div className="message-box">
-              <div className="message-header">
+              <div 
+                className="message-header"
+                style={{ 
+                  color: "white",
+                  marginBottom: "30px"
+                }}
+              >
                 <div className='fw-bold fs-2'>Messages</div>
               </div>
-              <div className="message-body">
+              <div 
+                className="message-body"
+            
+              >
                 {messages.length > 0 ? (
                   <>
                     {messages.map((message, index) => (
@@ -90,7 +99,11 @@ const Messages = () => {
                     ))}
                   </>
                 ) : (
-                  <div>No messages</div>
+                  <div
+                    style={{
+                      color: "white"
+                    }}
+                  >No messages</div>
                 )}
               </div>
             </div>
