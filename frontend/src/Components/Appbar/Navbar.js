@@ -1,97 +1,137 @@
-import * as React from 'react';
-import { useState } from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
-import Badge from '@mui/material/Badge';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import Sidebar from './Sidebar';
-import Notification from '../pages/notification/Notification';
-import Sendmsg from '../pages/notification/Sendmsg';
-import { useNavigate } from 'react-router-dom';
-import './style.css'
+import React, { useState, useEffect } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Box,
+  Badge,
+  Menu,
+  Drawer,
+  InputBase,
+  MenuItem,
+} from "@mui/material";
+import { styled, alpha } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import MailIcon from "@mui/icons-material/Mail";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import Sidebar from "./Sidebar"; // Make sure Sidebar component is imported
+import Notification from "../pages/notification/Notification";
+import Sendmsg from "../pages/notification/Sendmsg";
+import axios from "axios";
+import "./style.css";
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
+// Styled components for Search
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(3),
-    width: 'auto',
+    width: "auto",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
     },
   },
 }));
 
 const Navbar = () => {
-  const [state, setState] = useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
-  };
-
+  const [sidebarState, setSidebarState] = useState({ left: false });
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [newMessages, setNewMessages] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
   const [isSendmsgOpen, setIsSendmsgOpen] = useState(false);
-  const [newMessages, setNewMessages] = useState([]);
-  const [oldMessages, setOldMessages] = useState([
-    { sender: 'Viet Hoang', time: '7d', text: 'Hello!!!' },
-    { sender: 'Minh Duc', time: '9d', text: 'Can I ask u something' },
-    { sender: 'Hai Zuoc', time: '9d', text: 'U have picture of this apartment ?' },
-    { sender: 'Nhat Minh', time: '2w', text: 'Please send me some info' },
-  ]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const isNotificationsOpen = Boolean(notificationsAnchorEl);
-  const notificationsDropdownId = isNotificationsOpen ? 'notifications-dropdown' : undefined;
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        if (!token) {
+          return;
+        }
+        const response = await axios.get(
+          "http://localhost:5000/notifications",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log("Fetched Notifications:", response.data);
+
+        const newNotifications = response.data.filter((msg) => msg.isNew);
+        setNotifications(response.data);
+        setNewMessages(newNotifications);
+        setNotificationCount(newNotifications.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  useEffect(() => {
+    async function fetchUnreadCount() {
+      const token = localStorage.getItem("auth_token");
+      try {
+        const response = await fetch("http://localhost:5000/notifications/unread-count", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        console.log("Unread notifications count:", data.unread_count);
+        setUnreadCount(data.unread_count);
+      } catch (error) {
+        console.error("Error fetching unread notifications count:", error);
+      }
+    }    
+    fetchUnreadCount();
+  }, []);
+  
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const toggleSidebar = (open) => {
+    if (sidebarState.left !== open) {
+      setSidebarState({ left: open });
+    }
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -105,102 +145,91 @@ const Navbar = () => {
     setNotificationsAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    handleProfileMenuClose();
-    handleMobileMenuClose();
-  };
-
   const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
+    setMobileMenuAnchorEl(event.currentTarget);
   };
 
-  const handleMailClick = () => {
+  const handleMobileMenuClose = () => {
+    setMobileMenuAnchorEl(null);
+  };
+
+  const handleSendmsgOpen = () => {
     setIsSendmsgOpen(true);
   };
 
-  const handleCloseSendmsg = () => {
+  const handleSendmsgClose = () => {
     setIsSendmsgOpen(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
-
   const addMessage = (text) => {
-    const newMessage = { sender: 'You', time: 'Just now', text };
-    setOldMessages([...newMessages, ...oldMessages]);
-    setNewMessages([newMessage]);
+    const newMessage = { sender: "You", time: "Just now", text };
+    setNewMessages((prev) => [newMessage, ...prev]);
   };
 
-  const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
+      id="profile-menu"
+      open={Boolean(anchorEl)}
+      onClose={handleProfileMenuClose}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+       <MenuItem
+      onClick={() => {
+        handleProfileMenuClose(); // Close the menu
+        navigate("/profile");    // Navigate to Profile
+      }}
+    >
+      Profile
+    </MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const renderNotificationsMenu = (
+    <Menu
+      anchorEl={notificationsAnchorEl}
+      id="notifications-menu"
+      open={Boolean(notificationsAnchorEl)}
+      onClose={() => setNotificationsAnchorEl(null)}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+    >
+      <Box sx={{ p: 2, width: 400 }}>
+        <Notification notifications={notifications} />
+      </Box>
+    </Menu>
+  );
+
   const renderMobileMenu = (
     <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
+      anchorEl={mobileMenuAnchorEl}
+      id="mobile-menu"
+      open={Boolean(mobileMenuAnchorEl)}
       onClose={handleMobileMenuClose}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={handleMailClick}>
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
+        <IconButton size="large" color="inherit" onClick={handleSendmsgOpen}>
         </IconButton>
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit" onClick={handleNotificationsClick}>
-          <Badge badgeContent={17} color="error">
+        <IconButton
+          size="large"
+          color="inherit"
+          onClick={handleNotificationsClick}
+        >
+          <Badge badgeContent={notificationCount} color="error">
             <NotificationsIcon />
           </Badge>
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls={menuId}
-          aria-haspopup="true"
-          color="inherit"
-        >
+        <IconButton size="large" color="inherit">
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
@@ -209,92 +238,53 @@ const Navbar = () => {
   );
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-            onClick={toggleDrawer("left", true)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              sx={{ width: '600px' }}
-            />
-          </Search>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={handleMailClick}>
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <div className="dropdown">
-              <IconButton
-                size="large"
-                aria-label="show 17 new notifications"
-                color="inherit"
-                onClick={handleNotificationsClick}
-                data-bs-toggle="dropdown"
-                aria-expanded={isNotificationsOpen}
-              >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <div className={`dropdown-menu ${isNotificationsOpen ? 'show' : ''}`} aria-labelledby={notificationsDropdownId}>
-                <Box sx={{ p: 2, width: '400px' }}>
-                  <Notification newMessages={newMessages} oldMessages={oldMessages} /> {/* Render the Notification component */}
-                </Box>
-              </div>
-            </div>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
-      <Sidebar state={state} setState={setState} toggleDrawer={toggleDrawer} />
-      {isSendmsgOpen && (
-        <div className="sendmsg-container">
-          <button className="close-button" onClick={handleCloseSendmsg}>x</button>
-          <Sendmsg addMessage={addMessage} handleCloseSendmsg={handleCloseSendmsg} />
-        </div>
-      )}
-    </Box>
+<Box sx={{ flexGrow: 1 }}>
+  <AppBar position="static" sx={{ backgroundColor: "black" }}>
+    <Toolbar>
+      <IconButton
+        size="large"
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        onClick={() => toggleSidebar(true)}
+        sx={{ mr: 2 }}
+      >
+        <MenuIcon />
+      </IconButton>
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <StyledInputBase placeholder="Search…" />
+      </Search>
+      <Box sx={{ flexGrow: 1 }} />
+      <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        <IconButton size="large" color="inherit" onClick={handleSendmsgOpen}>
+            <MailIcon />
+        </IconButton>
+        <IconButton size="large" color="inherit" onClick={handleNotificationsClick}>
+          <Badge badgeContent={unreadCount} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <IconButton size="large" edge="end" color="inherit" onClick={handleProfileMenuOpen}>
+          <AccountCircle />
+        </IconButton>
+      </Box>
+    </Toolbar>
+  </AppBar>
+  <Sidebar sidebarState={sidebarState} toggleSidebar={toggleSidebar} />
+  {renderMobileMenu}
+  {renderNotificationsMenu}
+  {renderMenu}
+  {isSendmsgOpen && (
+    <div className="sendmsg-container">
+      <button className="close-button" onClick={handleSendmsgClose}> x </button>
+      <Sendmsg addMessage={addMessage} onClose={handleSendmsgClose} />
+    </div>
+  )}
+</Box>
+
   );
 };
-
 export default Navbar;

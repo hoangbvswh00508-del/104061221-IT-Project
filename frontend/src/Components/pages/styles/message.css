@@ -81,3 +81,53 @@
 .card-container {
     display: flex;
 }
+
+/* Styles for Message Box */
+.message-item {
+    background-color: #f9f9f9; /* Light background */
+    border: 1px solid #ddd; /* Border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Padding inside the box */
+    margin-bottom: 15px; /* Space between messages */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  .message-item .avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px; /* Space between avatar and text */
+  }
+  
+  .message-item .fw-bold {
+    font-weight: bold;
+  }
+  
+  .message-item .text-muted {
+    color: #888; /* Muted text color */
+  }
+  
+  .message-item .message-body {
+    margin-top: 10px; /* Space above the message content */
+  }
+  
+  /* Delete button styling */
+.delete-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 12px;
+  }
+  
+  .delete-btn:hover {
+    background-color: #dc3545; /* Darker red on hover */
+  }
+  
+  .delete-btn:focus {
+    outline: none;
+  }
+  

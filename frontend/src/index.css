@@ -19,4 +19,6 @@ code {
 }
 #root {
   height: 1000%;
+  /* height: auto; */
+  padding-bottom: 10%;
 }

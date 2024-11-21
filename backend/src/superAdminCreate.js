@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const router = express.Router();
 
-// Create a MySQL connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -17,7 +16,7 @@ const db = mysql.createConnection({
 
 router.post('/create-superadmin', async (req, res) => {
     const { username, password, email } = req.body;
-    console.log("Received data:", { username, password, email }); // Move this line here for early logging
+    console.log("Received data:", { username, password, email });
     console.log("Received request to create Super Admin");
 
     try {

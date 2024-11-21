@@ -7,7 +7,8 @@ import Dashboard from './Components/pages/Dashboard.jsx';
 import AccountCreation from './Components/pages/AccountCreation.jsx';
 import Messages from './Components/pages/Messages';
 import Profile from './Components/pages/Profile';
-import Order from './Components/pages/Order';
+import Network from './Components/pages/Network.jsx';
+import OfficeList from './Components/pages/OfficeList.jsx';
 import Role from './Components/pages/Role';
 import Navbar from './Components/Appbar/Navbar';
 
@@ -24,7 +25,8 @@ function AppContent() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/order" element={<Order />} />
+        <Route path="/network" element={<Network />} />
+        <Route path="/officeList" element={<OfficeList />} />
         <Route path="/role" element={<Role />} />
       </Routes>
     </>

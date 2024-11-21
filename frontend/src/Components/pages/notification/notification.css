@@ -1,3 +1,97 @@
+.navigate-text {
+  font-size: 14px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid #007bff;
+}
+
+.navigate-text:hover {
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+}
+
+.navigate-text:focus {
+  outline: none;
+}
+
+.mark-as-seen-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: white;
+  background-color: #0018F9;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.mark-as-seen-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.mark-as-seen-btn:hover:not(:disabled) {
+  background-color: #0033cc;
+}
+
+
+.notification-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.noti-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
 .noti-item:hover {
-    background-color: lightgray;
+  background-color: #f0f8ff;
+}
+
+.noti-item .avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.noti-item .fw-bold {
+  font-size: 16px;
+  color: #333;
+}
+
+.noti-item .text-muted {
+  color: #888;
+  font-size: 12px;
+}
+
+.fw-bold.mb-3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.text-muted {
+  color: #888;
+  font-size: 12px;
+}
+
+.noti-item .text-muted {
+  font-size: 12px;
 }
