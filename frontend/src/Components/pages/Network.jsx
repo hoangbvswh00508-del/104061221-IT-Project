@@ -1,54 +1,110 @@
-import React from 'react'
+import React from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { width } from "@mui/system";
 
-const OfficeList = () => {
+// Đăng ký các thành phần của Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const Network = () => {
+  const chartData = {
+    labels: ["24 Mar", "24 Apr", "24 May", "24 Jun", "24 Jul", "24 Aug", "24 Sep", "24 Oct", "24 Nov", "24 Dec"],
+    datasets: [
+      {
+        label: "User Subscribe",
+        data: [4000, 3000, 2000, 1500, 4000, 2500, 3000, 2000, 3500, 3000],
+        backgroundColor: "#4B7FFB",
+        borderRadius: 5,
+      },
+      {
+        label: "User Unsubscribe",
+        data: [2000, 1500, 1000, 500, 1500, 1000, 2000, 1500, 2000, 1000],
+        backgroundColor: "#1E293B",
+        borderRadius: 5,
+      },
+    ],
+  };
+
+  const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false, // Để biểu đồ phù hợp chiều cao container
+  plugins: {
+    legend: {
+      display: true,
+      position: "top",
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+    },
+    y: {
+      grid: {
+        color: "#E2E8F0",
+      },
+      beginAtZero: true,
+      ticks: {
+        stepSize: 1000,
+      },
+    },
+  },
+};
+
+
   return (
     <div style={styles.container}>
-      {/* Main wrapper with flex layout for Avatar and Information */}
-      <div style={styles.mainContent}>
-        
-        {/* Avatar Section */}
-        <div style={styles.avatarSection}>
-          <div style={styles.avatar}></div>
-          <button style={styles.chooseFileButton}>Choose File</button>
+      {/* Summary Cards */}
+      <div style={styles.summarySection}>
+        <div style={styles.card}>
+          <div style={styles.cardIcon}>👤</div>
+          <div>
+            <h4 style={styles.cardTitle}>Total Visitor This Month</h4>
+            <p style={styles.cardNumber}>23,862</p>
+            <span style={styles.percentage}>📈 13.5%</span>
+          </div>
         </div>
-        
-        {/* Information Section */}
-        <div style={styles.infoSection}>
-          <div style={styles.formGroup}>
-            <label htmlFor="username" style={styles.label}>Username</label>
-            <input type="text" id="username" style={styles.input} />
+        <div style={styles.card}>
+          <div style={styles.cardIcon}>📧</div>
+          <div>
+            <h4 style={styles.cardTitle}>Newsletter Subscriber</h4>
+            <p style={styles.cardNumber}>6,784</p>
+            <span style={{ ...styles.percentage, color: "#FF6B6B" }}>📉 13.5%</span>
           </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="email" style={styles.label}>Email</label>
-            <input type="email" id="email" style={styles.input} />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="phone" style={styles.label}>Phone Number</label>
-            <input type="tel" id="phone" style={styles.input} />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="address" style={styles.label}>Home Address</label>
-            <input type="text" id="address" style={styles.input} />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="role" style={styles.label}>Role</label>
-            <input type="text" id="role" value="Network Administrator" disabled style={styles.input} />
-          </div>
-
-          {/* Buttons Section */}
-          <div style={styles.buttonGroup}>
-            <button style={styles.editBtn}>Edit</button>
-            <button style={styles.saveBtn}>Save</button>
-            <button style={styles.changePasswordBtn}>Change Password</button>
+        </div>
+        <div style={styles.card}>
+          <div style={styles.cardIcon}>📉</div>
+          <div>
+            <h4 style={styles.cardTitle}>Total Bounce Rate</h4>
+            <p style={styles.cardNumber}>1,427</p>
           </div>
         </div>
       </div>
 
-      {/* Settings Section */}
-      <div style={styles.settings}>
-        <button style={styles.backupBtn}>Backup all data</button>
-        <button style={styles.apiBtn}>API Setting</button>
-        <button style={styles.githubBtn}>Github</button>
+      {/* Chart Section */}
+      <div style={styles.chartSection}>
+        <h3 style={styles.chartTitle}>Newsletter Subscribers</h3>
+        <div style={styles.legend}>
+          <span style={{ color: "#4B7FFB" }}>● User Subscribe</span>
+          <span style={{ color: "#1E293B" }}>● User Unsubscribe</span>
+        </div>
+        <Bar data={chartData} options={chartOptions}/>
       </div>
     </div>
   );
@@ -56,119 +112,62 @@ const OfficeList = () => {
 
 const styles = {
   container: {
-    maxWidth: '900px',
-    margin: '80px auto',
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',    
+    maxWidth: "1100px",
+    margin: "12px auto",
+    padding: "20px 20px 50px 20px",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   },
-  mainContent: {
-    display: 'flex', // Flexbox layout to align avatar and information side by side
-    justifyContent: 'space-between',
-    gap: "30px"
+  summarySection: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "30px",
   },
-  avatarSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginRight: '20px',
-    flex: '1',
+  card: {
+    display: "flex",
+    alignItems: "center",
+    padding: "20px",
+    borderRadius: "10px",
+    backgroundColor: "#F8FAFC",
+    width: "30%",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   },
-  avatar: {
-    width: '250px',
-    height: '350px',
-    backgroundColor: '#ccc',
-    marginBottom: '10px',
-    borderRadius: '8px',
+  cardIcon: {
+    fontSize: "30px",
+    marginRight: "15px",
   },
-  chooseFileButton: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    padding: '5px 10px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+  cardTitle: {
+    fontSize: "14px",
+    color: "#64748B",
+    marginBottom: "5px",
   },
-  infoSection: {
-    flex: '3', // Take more space than the avatar section
+  cardNumber: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "5px",
   },
-  formGroup: {
-    marginBottom: '15px',
+  percentage: {
+    fontSize: "14px",
+    color: "#22C55E",
   },
-  label: {
-    display: 'block',
-    fontWeight: 'bold',
-    marginBottom: '5px',
+  chartSection: {
+    padding: "20px",
+    borderRadius: "10px",
+    backgroundColor: "#F8FAFC",
+    height: "400px", // Giới hạn chiều cao
+    width: "100%"
   },
-  input: {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
+  chartTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    marginBottom: "10px",
   },
-  buttonGroup: {
-    marginTop: '20px',
-    display: 'flex',
-    // justifyContent: 'space-between',
-      gap: "20px"
-  },
-  editBtn: {
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  saveBtn: {
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  changePasswordBtn: {
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#ffc107',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  settings: {
-    marginTop: '30px',
-    margin: "30px 238px"
-  },
-  backupBtn: {
-    padding: '10px 20px',
-    marginRight: '10px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  apiBtn: {
-    padding: '10px 20px',
-    marginRight: '10px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#17a2b8',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  githubBtn: {
-    padding: '10px 20px',
-    marginRight: '10px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#333',
-    color: 'white',
-    cursor: 'pointer',
+  legend: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: "10px",
   },
 };
 
-
-export default OfficeList
+export default Network;

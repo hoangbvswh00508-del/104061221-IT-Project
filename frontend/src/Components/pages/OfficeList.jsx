@@ -42,9 +42,13 @@ const ProductTable = () => {
           <tbody>
             {products.map((product, index) => (
               <tr key={index}>
-                <td>
+                <td 
+                  style={{
+                    width:"10%"
+                  }}
+                >
                   <img
-                    src="https://via.placeholder.com/50x50"
+                    src="https://via.placeholder.com/100x50"
                     alt="Product"
                     style={styles.productImage}
                   />
@@ -76,11 +80,12 @@ const ProductTable = () => {
 const styles = {
   container: {
     maxWidth: '1100px',
-    margin: '0 auto',
+    margin: '5px auto',
     padding: '20px',
     backgroundColor: 'white',
     borderRadius: '10px',
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    fontFamily: "'Poppins', sans-serif"
   },
   header: {
     display: 'flex',
@@ -123,7 +128,7 @@ const styles = {
     borderBottom: '1px solid #ddd',
   },
   productImage: {
-    width: '50px',
+    width: '100px',
     height: '50px',
     borderRadius: '5px',
   },

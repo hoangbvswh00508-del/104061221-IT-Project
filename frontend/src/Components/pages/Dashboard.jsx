@@ -3,16 +3,17 @@ import React from 'react';
 const Dashboard = () => {
     return (
         <div>
-            <h1 
+            <img src='https://raw.githubusercontent.com/vtrung111203/DashboardKSE/refs/heads/main/logo_kse.jpg' alt=''
                 style={{
-                    color: "#fffefe",
-                }}    
-            >Welcome to the Dashboard!</h1>
-            <p
+                    height: "100px",
+                }}
+            />
+            <img src='https://raw.githubusercontent.com/vtrung111203/DashboardKSE/refs/heads/main/DashboardKSE.jpg'
                 style={{
-                    color: "#fffefe",
-                }}  
-            >This is a test page to confirm the redirect after login.</p>
+                    width: "100%",
+                }}
+                alt=''    
+            />
         </div>
     );
 };
