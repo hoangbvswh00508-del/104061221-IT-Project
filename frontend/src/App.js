@@ -11,6 +11,7 @@ import Network from './Components/pages/Network.jsx';
 import OfficeList from './Components/pages/OfficeList.jsx';
 import Role from './Components/pages/Role';
 import Navbar from './Components/Appbar/Navbar';
+import Analytics from './Components/pages/Analytics.jsx';
 
 
 function AppContent() {
@@ -28,6 +29,7 @@ function AppContent() {
         <Route path="/network" element={<Network />} />
         <Route path="/officeList" element={<OfficeList />} />
         <Route path="/role" element={<Role />} />
+        <Route path="/analytics" element={<Analytics />} />
       </Routes>
     </>
   );
