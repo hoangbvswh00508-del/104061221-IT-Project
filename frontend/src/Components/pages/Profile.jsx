@@ -143,8 +143,7 @@ const Profile = () => {
       setTimeout(() => setMessage(""), 3000);
       return;
     }
-  
-    // Apply validation here
+
     if (!validatePassword(currentPassword, newPassword)) {
       setMessage("Invalid new password. Must be at least 6 characters.");
       setTimeout(() => setMessage(""), 9000);

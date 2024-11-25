@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+
 
 const Sendmsg = ({ addMessage }) => {
   const [body, setBody] = useState('');
@@ -7,6 +8,10 @@ const Sendmsg = ({ addMessage }) => {
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [userData, setUserData] = useState({
+    verify: false,
+    email: "",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,9 +24,14 @@ const Sendmsg = ({ addMessage }) => {
         setError('No token found');
         return;
       }
-      const userEmail = await getLoggedInUserEmail(token);
-      if (userEmail === to) {
+      
+      if (userData.email === to) {
         setError("You cannot send a message to yourself.");
+        return;
+      }
+
+      if (userData.verify !== 1){
+        setError("Email is not verified, cannot send message");
         return;
       }
 
@@ -56,18 +66,26 @@ const Sendmsg = ({ addMessage }) => {
     }
   };
 
-  const getLoggedInUserEmail = async (token) => {
-    try {
-      const response = await axios.get('http://localhost:5000/get-user-data', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data.email;
-    } catch (error) {
-      console.error('Error fetching logged-in user email:', error);
-      setError('Error fetching user information');
-      return null;
-    }
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const response = await fetch("http://localhost:5000/get-user-data", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (data) {
+          setUserData({
+            email: data.email,
+            verify: data.verify,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const getUserIdByEmail = async (email) => {
     try {
