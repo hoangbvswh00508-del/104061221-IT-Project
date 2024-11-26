@@ -2,14 +2,14 @@ import React from 'react';
 
 const ProductTable = () => {
   const products = [
-    { office: '2 mil dong/month', phone: '(225) 555-0118', seller: 'Marvin McKinney', location: 'Quang Ngai', status: 'Sold' },
-    { office: '1.5 mil dong/month', phone: '(205) 555-0100', seller: 'Ronald Richards', location: 'Nghe An', status: 'Unsold' },
-    { office: '2.2 mil dong/month', phone: '(302) 555-0107', seller: 'Floyd Miles', location: 'Ha Tinh', status: 'Unsold' },
-    { office: '1.7 mil dong/month', phone: '(252) 555-0126', seller: 'Jacob Jones', location: 'Nha Trang', status: 'Sold' },
-    { office: '1.9 mil dong/month', phone: '(629) 555-0129', seller: 'Kristin Watson', location: 'Hai Phong', status: 'Sold' },
-    { office: '2.4 mil dong/month', phone: '(406) 555-0120', seller: 'Jane Cooper', location: 'Ho Chi Minh', status: 'Unsold' },
-    { office: '1.6 mil dong/month', phone: '(208) 555-0112', seller: 'Kathryn Murphy', location: 'Ha Noi', status: 'Sold' },
-    { office: '1.8 mil dong/month', phone: '(704) 555-0127', seller: 'Jerome Bell', location: 'Thanh Hoa', status: 'Unsold' },
+    { office: '2 mil dong/month', phone: '(225) 555-0118', seller: 'Marvin McKinney', location: 'Quang Ngai', status: 'Sold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_1.jpg' },
+    { office: '1.5 mil dong/month', phone: '(205) 555-0100', seller: 'Ronald Richards', location: 'Nghe An', status: 'Unsold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_2.jpg' },
+    { office: '2.2 mil dong/month', phone: '(302) 555-0107', seller: 'Floyd Miles', location: 'Ha Tinh', status: 'Unsold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_3.jpg' },
+    { office: '1.7 mil dong/month', phone: '(252) 555-0126', seller: 'Jacob Jones', location: 'Nha Trang', status: 'Sold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_4.jpg' },
+    { office: '1.9 mil dong/month', phone: '(629) 555-0129', seller: 'Kristin Watson', location: 'Hai Phong', status: 'Sold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_5.jpg' },
+    { office: '2.4 mil dong/month', phone: '(406) 555-0120', seller: 'Jane Cooper', location: 'Ho Chi Minh', status: 'Unsold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_6.jpg' },
+    { office: '1.6 mil dong/month', phone: '(208) 555-0112', seller: 'Kathryn Murphy', location: 'Ha Noi', status: 'Sold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_7.jpg' },
+    { office: '1.8 mil dong/month', phone: '(704) 555-0127', seller: 'Jerome Bell', location: 'Thanh Hoa', status: 'Unsold', image: 'https://raw.githubusercontent.com/vtrung111203/OfficeListKSE/refs/heads/main/office_list_8.jpg' },
   ];
 
   return (
@@ -48,7 +48,7 @@ const ProductTable = () => {
                   }}
                 >
                   <img
-                    src="https://via.placeholder.com/100x50"
+                    src={product.image}
                     alt="Product"
                     style={styles.productImage}
                   />
